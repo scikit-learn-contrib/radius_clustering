@@ -77,7 +77,7 @@ This project is licensed under the GNU General Public License v3.0 - see the LIC
 
 The two MDS algorithms implemented are forked and modified (or rewritten) from the following authors:
 
-- [Alejandra Casado](https://github.com/AlejandraCasado) for the minimum dominating set heuristic code [[1](https://www.sciencedirect.com/science/article/pii/S0378475422005055)], whom original code is available at [truc]. We rewrote the code in C++ to adapt to the need of python interfacing.
+- [Alejandra Casado](https://github.com/AlejandraCasado) for the minimum dominating set heuristic code [[1](https://www.sciencedirect.com/science/article/pii/S0378475422005055)]. We rewrote the code in C++ to adapt to the need of python interfacing.
 - [Hua Jiang](https://github.com/huajiang-ynu) for the minimum dominating set exact algorithm code [[2](https://dl.acm.org/doi/abs/10.24963/ijcai.2023/622)]. The code has been adapted to the need of python interfacing.
 
 ### Funders
@@ -85,13 +85,13 @@ The two MDS algorithms implemented are forked and modified (or rewritten) from t
 The Radius Clustering work has been funded by:
 
 - [LIAS, ISAE-ENSMA](https://www.lias-lab.fr/)
-- LabCom @lienor and the [French National Research Agency](https://anr.fr/)
+- [LabCom @lienor](https://labcom-alienor.ensma.fr/) and the [French National Research Agency](https://anr.fr/)
 
 ### Contributors
 
-- Mickaël Baron, LIAS, ISAE-ENSMA
-- Brice Chardin, LIAS, ISAE-ENSMA
-- Quentin Haenn, LIAS, ISAE-ENSMA
+- [Quentin Haenn (core developer)](https://www.lias-lab.fr/members/quentinhaenn/), LIAS, ISAE-ENSMA
+- [Brice Chardin](https://www.lias-lab.fr/members/bricechardin/), LIAS, ISAE-ENSMA
+- [Mickaël Baron](https://www.lias-lab.fr/members/mickaelbaron/), LIAS, ISAE-ENSMA
 
 
 ## References
