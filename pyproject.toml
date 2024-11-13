@@ -7,7 +7,9 @@ name = "radius-clustering"
 version = "1.0.0"
 description = "A Clustering under radius constraints algorithm using minimum dominating sets"
 readme = "README.md"
-authors = ["Quentin Haenn"]
+authors = [
+    {name = "Quentin Haenn"},
+]
 
 dependencies = [
     "matplotlib>=3.6.2",
