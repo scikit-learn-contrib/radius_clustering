@@ -19,7 +19,7 @@ on a well-known dataset.
 # SPDX-License-Identifier: MIT
 
 
-#%%
+# %%
 # Load the Iris dataset
 # ---------------------
 #
@@ -34,11 +34,11 @@ from radius_clustering import RadiusClustering
 
 # Load the Iris dataset
 iris = datasets.load_iris()
-X = iris['data']
+X = iris["data"]
 y = iris.target
 
 
-#%%
+# %%
 # Visualize the Iris dataset
 # --------------------------
 #
@@ -52,13 +52,13 @@ import mpl_toolkits.mplot3d
 pca = PCA(n_components=3)
 iris_reduced = pca.fit_transform(X)
 fig = plt.figure(figsize=(8, 6))
-ax = fig.add_subplot(111, projection='3d', elev=48, azim=134)
+ax = fig.add_subplot(111, projection="3d", elev=48, azim=134)
 ax.scatter(
     iris_reduced[:, 0],
     iris_reduced[:, 1],
     iris_reduced[:, 2],
     c=y,
-    cmap='Dark2',
+    cmap="Dark2",
     s=40,
 )
 # Set plot labels
@@ -74,7 +74,7 @@ ax.zaxis.set_ticklabels([])
 
 plt.show()
 
-#%%
+# %%
 # Compute Clustering with Radius Clustering
 # -----------------------------------------
 #
@@ -87,7 +87,7 @@ t0 = time.time()
 rad.fit(X)
 t_rad = time.time() - t0
 
-#%%
+# %%
 # Compute KMeans Clustering for Comparison
 # ----------------------------------------
 #
@@ -100,13 +100,14 @@ t0 = time.time()
 k_means.fit(X)
 t_kmeans = time.time() - t0
 
-#%% Establishing parity between clusters
+# %% Establishing parity between clusters
 # --------------------------------------
 #
 # We want to have the same color for the same cluster in both plots.
 # We can achieve this by matching the cluster labels of the Radius clustering and the KMeans clustering.
 # First we define a function to retrieve the cluster centers from the Radius clustering and KMeans clustering and
 # match them pairwise.
+
 
 def get_order_labels(kmeans, rad, data):
     centers1_cpy = kmeans.cluster_centers_.copy()
@@ -133,6 +134,7 @@ def get_order_labels(kmeans, rad, data):
         order.append(int(match_label[0]))
     return order
 
+
 from sklearn.metrics.pairwise import pairwise_distances_argmin
 
 rad_centers_index = np.array(rad.centers_)
@@ -146,7 +148,7 @@ rad_centers_coordinates = X[rad_centers]
 kmeans_labels = pairwise_distances_argmin(X, kmeans_centers)
 rad_labels = pairwise_distances_argmin(X, rad_centers_coordinates)
 
-#%%
+# %%
 # Plotting the results and the difference
 # ---------------------------------------
 
@@ -162,7 +164,7 @@ ax.scatter(
     iris_reduced[:, 1],
     iris_reduced[:, 2],
     c=kmeans_labels,
-    cmap='Dark2',
+    cmap="Dark2",
     s=40,
 )
 # adapting center coordinates to the 3D plot
@@ -214,7 +216,9 @@ for k in range(3):
     different += (kmeans_labels == k) != (rad_labels == k)
 
 identical = np.logical_not(different)
-ax.scatter(iris_reduced[identical, 0], iris_reduced[identical, 1], color="#bbbbbb", marker=".")
+ax.scatter(
+    iris_reduced[identical, 0], iris_reduced[identical, 1], color="#bbbbbb", marker="."
+)
 ax.scatter(iris_reduced[different, 0], iris_reduced[different, 1], color="m")
 ax.set_title("Difference")
 ax.set_xticks(())
@@ -223,7 +227,7 @@ ax.set_zticks(())
 
 plt.show()
 
-#%%
+# %%
 # Another difference plot
 # -----------------------
 #
@@ -250,7 +254,7 @@ t0 = time.time()
 k_means.fit(X)
 t_kmeans = time.time() - t0
 
-#%%
+# %%
 # Reapllying the same process as before
 # --------------------------------------
 
@@ -265,7 +269,7 @@ rad_centers_coordinates = X[rad_centers]
 kmeans_labels = pairwise_distances_argmin(X, kmeans_centers)
 rad_labels = pairwise_distances_argmin(X, rad_centers_coordinates)
 
-#%%
+# %%
 # Plotting the results and the difference
 # ---------------------------------------
 
@@ -281,7 +285,7 @@ ax.scatter(
     wine_reduced[:, 1],
     wine_reduced[:, 2],
     c=kmeans_labels,
-    cmap='Dark2',
+    cmap="Dark2",
     s=40,
 )
 # adapting center coordinates to the 3D plot
@@ -298,7 +302,9 @@ ax.set_xticks(())
 ax.set_yticks(())
 ax.set_zticks(())
 
-ax.text3D(60.0, 80.0, 0.0, "train time: %.2fs\ninertia: %f" % (t_kmeans, k_means.inertia_))
+ax.text3D(
+    60.0, 80.0, 0.0, "train time: %.2fs\ninertia: %f" % (t_kmeans, k_means.inertia_)
+)
 
 # MDS
 ax = fig.add_subplot(1, 3, 2, projection="3d", elev=48, azim=134, roll=0)
@@ -333,7 +339,9 @@ for k in range(3):
     different += (kmeans_labels == k) != (rad_labels == k)
 
 identical = np.logical_not(different)
-ax.scatter(wine_reduced[identical, 0], wine_reduced[identical, 1], color="#bbbbbb", marker=".")
+ax.scatter(
+    wine_reduced[identical, 0], wine_reduced[identical, 1], color="#bbbbbb", marker="."
+)
 ax.scatter(wine_reduced[different, 0], wine_reduced[different, 1], color="m")
 ax.set_title("Difference")
 ax.set_xticks(())
@@ -342,7 +350,7 @@ ax.set_zticks(())
 
 plt.show()
 
-#%%
+# %%
 # Conclusion
 # ----------
 #

@@ -9,26 +9,26 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath("../.."))
 
-project = 'Radius Clustering'
-copyright = '2024, Haenn Quentin, Chardin Brice, Baron Mickaël'
-author = 'Haenn Quentin, Chardin Brice, Baron Mickaël'
-release = '1.0'
+project = "Radius Clustering"
+copyright = "2024, Haenn Quentin, Chardin Brice, Baron Mickaël"
+author = "Haenn Quentin, Chardin Brice, Baron Mickaël"
+release = "1.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.viewcode',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.viewcode",
     "sphinx-prompt",
-    'sphinx.ext.napoleon',
+    "sphinx.ext.napoleon",
     "sphinx_remove_toctrees",
     "sphinxcontrib.email",
-    'sphinx_gallery.gen_gallery',
-    'sphinx_copybutton',
+    "sphinx_gallery.gen_gallery",
+    "sphinx_copybutton",
     "sphinx.ext.intersphinx",
     "sphinx_design",
 ]
@@ -43,22 +43,20 @@ copybutton_exclude = "style"
 # Conf of numpydoc
 numpydoc_class_members_toctree = False
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'pydata_sphinx_theme'
-#html_static_path = ['_static']
+html_theme = "pydata_sphinx_theme"
+# html_static_path = ['_static']
 
 html_logo = "./images/logo-lias.jpg"
 
 html_short_title = "Radius Clustering"
 
-html_sidebars = {
-    "**": []
-}
+html_sidebars = {"**": []}
 
 html_theme_options = {
     "icon_links_label": "Icon Links",
@@ -87,16 +85,15 @@ html_theme_options = {
 sg_examples_dir = "../../examples"
 sg_gallery_dir = "auto_examples"
 sphinx_gallery_conf = {
-    "doc_module"              : "radius_clustering",
-    "backreferences_dir"      : os.path.join("modules", "generated"),
-    "show_memory"             : False,
-    "examples_dirs"           : [sg_examples_dir],
-    "gallery_dirs"            : [sg_gallery_dir],
-
+    "doc_module": "radius_clustering",
+    "backreferences_dir": os.path.join("modules", "generated"),
+    "show_memory": False,
+    "examples_dirs": [sg_examples_dir],
+    "gallery_dirs": [sg_gallery_dir],
     # avoid generating too many cross links
     "inspect_global_variables": False,
-    "remove_config_comments"  : True,
-    "plot_gallery"            : "True",
-    "recommender"             : {"enable": True, "n_examples": 4, "min_df": 12},
-    "reset_modules"           : ("matplotlib", "seaborn"),
+    "remove_config_comments": True,
+    "plot_gallery": "True",
+    "recommender": {"enable": True, "n_examples": 4, "min_df": 12},
+    "reset_modules": ("matplotlib", "seaborn"),
 }
