@@ -13,7 +13,7 @@ CXX_LINK_ARGS = ["-std=c++11"]
 if not CPU:
     CPU = platform.machine()
 
-if (SYSTEM != "Darwin") and (CPU not in 'arm64'):
+if (SYSTEM != "Darwin") and (CPU not in "arm64"):
     C_COMPILE_ARGS.append("-march=native")
     CXX_COMPILE_ARGS.append("-march=native")
     CXX_LINK_ARGS.append("-fopenmp")

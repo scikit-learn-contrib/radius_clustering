@@ -2,7 +2,8 @@
 Radius Clustering
 
 This module provides functionality for Minimum Dominating Set (MDS) based clustering.
-It includes methods for solving MDS problems and applying the solutions to clustering tasks.
+It includes methods for solving MDS problems and applying the solutions to
+clustering tasks.
 
 This module serves as the main interface for the Radius clustering library.
 """
@@ -71,14 +72,17 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         >>> from radius_clustering import RadiusClustering
         >>> from sklearn import datasets
         >>> # Load the Iris dataset
-        >>> iris = datasets.fetch_openml(name='iris', version=1, parser='auto')
-        >>> X = iris['data']  # Use dictionary-style access instead of attribute access
-        >>> rad = RadiusClustering(manner="exact", threshold=1.43).fit(X) #Threshold set to 1.43 because it is the optimal
-        ...                                                            #threshold for the Iris dataset
+        >>> iris = datasets.fetch_openml(name="iris", version=1, parser="auto")
+        >>> X = iris["data"]  # Use dictionary-style access instead of attribute access
+        >>> rad = RadiusClustering(manner="exact", threshold=1.43).fit(
+        ...     X
+        ... )  # Threshold set to 1.43 because it is the optimal
+        ... # threshold for the Iris dataset
         >>> rad.centers_
         [96, 49, 102]
 
-        For examples on common datasets and differences with kmeans, see :ref:`sphx_glr_auto_examples_plot_iris_example.py`
+        For examples on common datasets and differences with kmeans,
+        see :ref:`sphx_glr_auto_examples_plot_iris_example.py`
         """
         self.X = check_array(X)
 
@@ -164,7 +168,8 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         """
         Compute the effective radius of the clustering.
 
-        The effective radius is the maximum radius among all clusters. That means EffRad = max(R(C_i)) for all i.
+        The effective radius is the maximum radius among all clusters.
+        That means EffRad = max(R(C_i)) for all i.
         """
         self.effective_radius = np.min(self.dist_mat[:, self.centers_], axis=1).max()
 
