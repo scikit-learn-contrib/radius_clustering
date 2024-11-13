@@ -1,11 +1,9 @@
 <p align="center">
-<a href="https://github.com/lias-laboratory/radius_clustering/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/lias-laboratory/radius-clustering
-"></a>
+<a href="https://github.com/lias-laboratory/radius_clustering/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/lias-laboratory/radius-clustering"></a>
 <a href="https://pypi.org/project/radius-clustering/"><img alt="PyPI" src="https://img.shields.io/pypi/v/radius-clustering"></a>
 <a href="https://docs.astral.sh/ruff/"><img alt="Code style: Ruff" src="https://img.shields.io/badge/style-ruff-41B5BE?style=flat"></a>
 <a><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/lias-laboratory/radius-clustering/sphinx.yml?label=Doc%20Building"></a>
-<a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering
-"></a>
+<a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
 
 </p>
 
