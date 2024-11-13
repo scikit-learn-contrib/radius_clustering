@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e -u -x
 
-PLAT=manylinux_2_24_x86_64
-
 function repair_wheel {
     wheel="$1"
     if ! auditwheel show "$wheel"; then
@@ -14,8 +12,12 @@ function repair_wheel {
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-  if [[ "$PYBIN" == *cp39* || "$PYBIN" == *cp310* || $PYBIN == *cp311* ]] ; then
-    "${PYBIN}/pip" wheel --no-deps /io/ -w wheelhouse/
+  if [[ $PYBIN != *"cp313t"* ]] && \
+     [[ $PYBIN != *"pp"* ]] && \
+     [[ $PYBIN != *"cp36"* ]] &&\
+     [[ $PYBIN != *"cp37"* ]] &&\
+     [[ $PYBIN != *"cp38"* ]]; then
+    "${PYBIN}/pip" wheel /io/ --no-deps -w wheelhouse/
   fi
 done
 

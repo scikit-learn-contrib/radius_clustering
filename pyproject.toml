@@ -7,9 +7,8 @@ name = "radius-clustering"
 version = "1.0.0"
 description = "A Clustering under radius constraints algorithm using minimum dominating sets"
 readme = "README.md"
-maintainers = [
-    {name = "Haenn Quentin", email="quentin.haenn@ensma.fr"},
-]
+authors = ["Quentin Haenn"]
+
 dependencies = [
     "matplotlib>=3.6.2",
     "numpy>=1.23",
@@ -39,6 +38,11 @@ classifiers=[
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 keywords = ["Unsupervised learning","clustering", "minimum dominating sets","clustering under radius constraint"]
+
+[project.urls]
+source = "https://github.com/lias-laboratory/radius_clustering"
+tracker = "https://github.com/lias-laboratory/radius_clustering/issues"
+documentation = "https://lias-laboratory.github.io/radius_clustering/"
 
 [project.optional-dependencies]
 dev = [
