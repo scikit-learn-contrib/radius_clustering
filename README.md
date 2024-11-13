@@ -1,3 +1,12 @@
+<p align="center">
+<a href="https://github.com/lias-laboratory/radius_clustering/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/lias-laboratory/radius-clustering"></a>
+<a href="https://pypi.org/project/radius-clustering/"><img alt="PyPI" src="https://img.shields.io/pypi/v/radius-clustering"></a>
+<a href="https://docs.astral.sh/ruff/"><img alt="Code style: Ruff" src="https://img.shields.io/badge/style-ruff-41B5BE?style=flat"></a>
+<a><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/lias-laboratory/radius-clustering/sphinx.yml?label=Doc%20Building"></a>
+<a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
+
+</p>
+
 # Radius Clustering
 
 Radius clustering is a Python package that implements clustering under radius constraint based on the Minimum Dominating Set (MDS) problem. This problem is NP-Hard but has been studied in the literature and proven to be linked to the clustering under radius constraint problem (see [references](#references) for more details).
