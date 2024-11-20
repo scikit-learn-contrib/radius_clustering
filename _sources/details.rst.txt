@@ -118,6 +118,4 @@ Key insights:
 
 .. note:: Since the publication of the paper, the Radius Clustering package has been improved and optimized. The results presented here are based on the initial version of the package. For the latest results, please refer to the documentation or the source code.
 
-References
-==========
 

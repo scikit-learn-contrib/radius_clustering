@@ -10,6 +10,12 @@ There are different ways to install Radius Clustering:
 
 * :ref:`From the source <installation-source>`. This is best for users who want the latest features and are comfortable building from source. This is also needed if you want to contribute to the project.
 
+.. warning::
+
+    Radius Clustering is currently not available on PyPI, pending the organization acceptance on PyPI. You can install the package from the source by following the :ref:`instructions <installation-source>`.
+    Please notice that the compilation stage require a C and C++ compiler toolchain to be installed on your system.
+
+
 .. _installation-pypi:
 
 Installing from PyPI
@@ -27,10 +33,6 @@ Installing from PyPI
       .install-instructions .sd-tab-set.tabs-os::before {
         content: "Operating System";
       }
-
-      .install-instructions .sd-tab-set.tabs-package-manager::before {
-        content: "Package Manager";
-      }
     }
   </style>
 
@@ -38,9 +40,11 @@ Installing from PyPI
 
   .. tab-set::
     :class: tabs-os
+    :sync-group: os
 
     .. tab-item:: Windows
       :class-label: tab-4
+      :sync: windows
 
           Install the 64-bit version of Python 3, for instance from the
           `official website <https://www.python.org/downloads/windows/>`__.
@@ -65,7 +69,7 @@ Installing from PyPI
 
     .. tab-item:: MacOS
       :class-label: tab-4
-
+      :sync: macos
 
           Install Python 3 using `homebrew <https://brew.sh/>`_ (`brew install python`)
           or by manually installing the package from the `official website
@@ -91,6 +95,7 @@ Installing from PyPI
 
     .. tab-item:: Linux
       :class-label: tab-4
+      :sync: linux
 
           Python 3 is usually installed by default on most Linux distributions. To
           check if you have it installed, try:
@@ -143,12 +148,84 @@ a Raspberry Pi).
 Installing from the source
 --------------------------
 
-To install Radius Clustering from the source, you need to clone the repository and
+Compiler Requirements
+~~~~~~~~~~~~~~~~~~~~~
+
+To install Radius Clustering from the source, you need to have a C and C++ compiler and their respective toolchains installed on your system, depending on your operating system.
+
+.. raw:: html
+
+  <style>
+    /* Show caption on large screens */
+    @media screen and (min-width: 960px) {
+      .install-instructions .sd-tab-set {
+        --tab-caption-width: 20%;
+      }
+
+      .install-instructions .sd-tab-set.tabs-os::before {
+        content: "Operating System";
+      }
+    }
+  </style>
+
+.. div:: install-instructions
+
+  .. tab-set::
+    :class: tabs-os
+    :sync-group: os
+
+    .. tab-item:: Windows
+      :class-label: tab-4
+      :sync: windows
+
+          Install the correct version of Microsoft Visual C++ Build Tools for your Python version from the `official website <https://visualstudio.microsoft.com/visual-cpp-build-tools/>`__.
+
+          In Build Tools, install C++ toolchain. Ensure that it is added to the system PATH.
+          You are now ready to install Radius Clustering from source.
+
+    .. tab-item:: MacOS
+      :class-label: tab-4
+      :sync: macos
+
+        Normally, you should have the necessary tools installed on your system as it comes with Xcode Command Line Tools, which is included when you first install Homebrew or Xcode.
+           To check if you have the necessary tools installed, try:
+
+        .. prompt:: bash
+
+             gcc --version
+             g++ --version
+
+        If you don't have the necessary tools installed, you can install them directly from the App Store by getting Xcode. You may also be interested in installing Homebrew. See this `tutorial <https://www.moncefbelyamani.com/how-to-install-xcode-with-homebrew/>`__ for more information.
+
+    .. tab-item:: Linux
+      :class-label: tab-4
+      :sync: linux
+
+            Normally, you should have the necessary tools installed on your system. To check if you have the necessary tools installed, try:
+
+            .. prompt:: bash
+
+                gcc --version
+                g++ --version
+
+            If you don't have the necessary tools installed, you can install them using your distribution's package manager. For instance, on Ubuntu, you can install them by running:
+
+            .. prompt:: bash
+
+                sudo apt-get update
+                sudo apt-get install build-essential
+
+
+Installing Radius Clustering
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now you have installed compilers toolchains requirements, you can build and install `radius-clustering` from the sources. You need to clone the repository and
 install the package using the following commands:
 
 .. prompt:: bash
 
-  cd /path/to/your/folder
+  git clone git@github.com:lias-laboratory/radius_clustering.git # clone the repository
+  cd radius_clustering
   python -m venv rad-env
   source rad-env/bin/activate  # activate
   python -m pip install .

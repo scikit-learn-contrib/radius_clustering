@@ -37,6 +37,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/custom.css" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
@@ -424,6 +425,11 @@
 <li><p><a class="reference internal" href="#installation-pypi"><span class="std std-ref">From PyPI</span></a>. This is the recommended way to install Radius Clustering. It will provide a stable version and pre-built packages are available for most platforms.</p></li>
 <li><p><a class="reference internal" href="#installation-source"><span class="std std-ref">From the source</span></a>. This is best for users who want the latest features and are comfortable building from source. This is also needed if you want to contribute to the project.</p></li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Radius Clustering is currently not available on PyPI, pending the organization acceptance on PyPI. You can install the package from the source by following the <a class="reference internal" href="#installation-source"><span class="std std-ref">instructions</span></a>.
+Please notice that the compilation stage require a C and C++ compiler toolchain to be installed on your system.</p>
+</div>
 <section id="installing-from-pypi">
 <span id="installation-pypi"></span><h2>Installing from PyPI<a class="headerlink" href="#installing-from-pypi" title="Link to this heading">#</a></h2>
 <style>
@@ -436,15 +442,11 @@
     .install-instructions .sd-tab-set.tabs-os::before {
       content: "Operating System";
     }
-
-    .install-instructions .sd-tab-set.tabs-package-manager::before {
-      content: "Package Manager";
-    }
   }
 </style><div class="install-instructions docutils">
 <div class="sd-tab-set tabs-os docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label tab-4" for="sd-tab-item-0">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="windows" for="sd-tab-item-0">
 Windows</label><div class="sd-tab-content docutils">
 <blockquote>
 <div><p>Install the 64-bit version of Python 3, for instance from the
@@ -465,7 +467,7 @@ span.prompt1:before {
 </pre></div></div></div></blockquote>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label tab-4" for="sd-tab-item-1">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="macos" for="sd-tab-item-1">
 MacOS</label><div class="sd-tab-content docutils">
 <blockquote>
 <div><p>Install Python 3 using <a class="reference external" href="https://brew.sh/">homebrew</a> (<cite>brew install python</cite>)
@@ -486,7 +488,7 @@ span.prompt2:before {
 </pre></div></div></div></blockquote>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label tab-4" for="sd-tab-item-2">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="linux" for="sd-tab-item-2">
 Linux</label><div class="sd-tab-content docutils">
 <blockquote>
 <div><p>Python 3 is usually installed by default on most Linux distributions. To
@@ -523,9 +525,65 @@ a Raspberry Pi).</p>
 </section>
 <section id="installing-from-the-source">
 <span id="installation-source"></span><h2>Installing from the source<a class="headerlink" href="#installing-from-the-source" title="Link to this heading">#</a></h2>
-<p>To install Radius Clustering from the source, you need to clone the repository and
+<section id="compiler-requirements">
+<h3>Compiler Requirements<a class="headerlink" href="#compiler-requirements" title="Link to this heading">#</a></h3>
+<p>To install Radius Clustering from the source, you need to have a C and C++ compiler and their respective toolchains installed on your system, depending on your operating system.</p>
+<style>
+  /* Show caption on large screens */
+  @media screen and (min-width: 960px) {
+    .install-instructions .sd-tab-set {
+      --tab-caption-width: 20%;
+    }
+
+    .install-instructions .sd-tab-set.tabs-os::before {
+      content: "Operating System";
+    }
+  }
+</style><div class="install-instructions docutils">
+<div class="sd-tab-set tabs-os docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="windows" for="sd-tab-item-3">
+Windows</label><div class="sd-tab-content docutils">
+<blockquote>
+<div><p>Install the correct version of Microsoft Visual C++ Build Tools for your Python version from the <a class="reference external" href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">official website</a>.</p>
+<p>In Build Tools, install C++ toolchain. Ensure that it is added to the system PATH.
+You are now ready to install Radius Clustering from source.</p>
+</div></blockquote>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="macos" for="sd-tab-item-4">
+MacOS</label><div class="sd-tab-content docutils">
+<blockquote>
+<div><dl class="simple">
+<dt>Normally, you should have the necessary tools installed on your system as it comes with Xcode Command Line Tools, which is included when you first install Homebrew or Xcode.</dt><dd><p>To check if you have the necessary tools installed, try:</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">gcc<span class="w"> </span>--version</span>
+<span class="prompt2">g++<span class="w"> </span>--version</span>
+</pre></div></div><p>If you don’t have the necessary tools installed, you can install them directly from the App Store by getting Xcode. You may also be interested in installing Homebrew. See this <a class="reference external" href="https://www.moncefbelyamani.com/how-to-install-xcode-with-homebrew/">tutorial</a> for more information.</p>
+</div></blockquote>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label tab-4" data-sync-group="os" data-sync-id="linux" for="sd-tab-item-5">
+Linux</label><div class="sd-tab-content docutils">
+<blockquote>
+<div><p>Normally, you should have the necessary tools installed on your system. To check if you have the necessary tools installed, try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">gcc<span class="w"> </span>--version</span>
+<span class="prompt2">g++<span class="w"> </span>--version</span>
+</pre></div></div><p>If you don’t have the necessary tools installed, you can install them using your distribution’s package manager. For instance, on Ubuntu, you can install them by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">sudo<span class="w"> </span>apt-get<span class="w"> </span>update</span>
+<span class="prompt2">sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>build-essential</span>
+</pre></div></div></div></blockquote>
+</div>
+</div>
+</div>
+</section>
+<section id="installing-radius-clustering">
+<h3>Installing Radius Clustering<a class="headerlink" href="#installing-radius-clustering" title="Link to this heading">#</a></h3>
+<p>Now you have installed compilers toolchains requirements, you can build and install <cite>radius-clustering</cite> from the sources. You need to clone the repository and
 install the package using the following commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2"><span class="nb">cd</span><span class="w"> </span>/path/to/your/folder</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">git<span class="w"> </span>clone<span class="w"> </span>git@github.com:lias-laboratory/radius_clustering.git<span class="w"> </span><span class="c1"># clone the repository</span></span>
+<span class="prompt2"><span class="nb">cd</span><span class="w"> </span>radius_clustering</span>
 <span class="prompt2">python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>rad-env</span>
 <span class="prompt2"><span class="nb">source</span><span class="w"> </span>rad-env/bin/activate<span class="w">  </span><span class="c1"># activate</span></span>
 <span class="prompt2">python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.</span>
@@ -540,7 +598,7 @@ dependencies. You can do this by running:</p>
 the documentation dependencies by running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span class="prompt2">python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>docs<span class="o">]</span></span>
 </pre></div></div><section id="dependencies">
-<h3>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h3>
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h4>
 <p>The minimum version of radius-clustering dependencies are listed below along with its
 purpose.</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -617,6 +675,7 @@ purpose.</p>
 </section>
 </section>
 </section>
+</section>
 
 
                 </article>
@@ -671,7 +730,11 @@ purpose.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-from-pypi">Installing from PyPI</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-from-the-source">Installing from the source</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiler-requirements">Compiler Requirements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-radius-clustering">Installing Radius Clustering</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
