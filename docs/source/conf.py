@@ -8,7 +8,9 @@
 
 import os
 import sys
+from pathlib import Path
 
+sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../.."))
 
 project = "Radius Clustering"
@@ -25,6 +27,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx-prompt",
     "sphinx.ext.napoleon",
+    "sphinxcontrib.sass",
     "sphinx_remove_toctrees",
     "sphinxcontrib.email",
     "sphinx_gallery.gen_gallery",
@@ -81,6 +84,17 @@ html_theme_options = {
     "footer_center": [],
     "footer_end": [],
 }
+
+# Compile scss files into css files using sphinxcontrib-sass
+sass_src_dir, sass_out_dir = "scss", "_static/styles"
+sass_targets = {
+    f"{file.stem}.scss": f"{file.stem}.css"
+    for file in Path(sass_src_dir).glob("*.scss")
+}
+
+html_static_path = ["_static"]
+# Additional CSS files, should be subset of the values of `sass_targets`
+html_css_files = ["styles/custom.css"]
 
 sg_examples_dir = "../../examples"
 sg_gallery_dir = "auto_examples"
