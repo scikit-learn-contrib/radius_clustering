@@ -13,7 +13,7 @@ There are different ways to install Radius Clustering:
 .. warning::
 
     Radius Clustering is currently not available on PyPI, pending the organization acceptance on PyPI. You can install the package from the source by following the :ref:`instructions <installation-source>`.
-    Please notice that the compilation stage require a C and C++ compiler toolchain to be installed on your system.
+    Please notice that the compilation stage requires a C and C++ compiler toolchain to be installed on your system.
 
 
 .. _installation-pypi:

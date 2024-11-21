@@ -43,7 +43,6 @@ Authors & Contributors
 .. note::
     - `GitHub <https://github.com/quentinhaenn>`_
     - `Lab page <https://www.lias-lab.fr/fr/members/quentinhaenn/>`_
-    - Mail: :email:`quentin.haenn@ensma.fr`
 
 **Brice Chardin**, ISAE-ENSMA, LIAS, France. Associate Professor, co-author of this work.
 
@@ -53,6 +52,7 @@ Authors & Contributors
 **Mickaël Baron**, ISAE-ENSMA, LIAS, France. Research Engineer, co-author of this work.
 
 .. note::
+    - `GitHub <https://github.com/mickaelbaron>`_
     - `Lab page <https://www.lias-lab.fr/fr/members/mickaelbaron/>`_
 
 Principal References
