@@ -112,6 +112,14 @@ assert((Vec)->addr); \
 (Vec)->used=0;\
 }while(0)
 
+#define free_stack(Vec) \
+do{ \
+if(Vec!=NULL){\
+free(Vec->addr);\
+free(Vec);\
+}\
+}while(0)
+
 #define for_each_vec_item(Vec,T,It) for(T *It=Vec->addr, *__end=Vec->addr+Vec->used;It != __end;It++)
 
 #define remove_value_from_vector(Vec,T,Val) do{				\
@@ -221,13 +229,7 @@ static VEC_INT * FIX_STK,* TMP_STK;
 static VEC_INT * VEC_SUBGRAPHS;
 static VEC_INT * VEC_SOLUTION;
 static int NB_FIXED=0,NEW_IDX=0,NB_UNFIXED=0;
-static void parse_parmerters(int argc, char *argv[]) {  
-	printf("# searching on instance %s ...\n", argv[1]);
-	if (argc > 2) {
-	  sscanf(argv[2], "%d", &INIT_UPPER_BOUND);
-	  printf("# specify the initial upper bound %d \n", INIT_UPPER_BOUND);
-	}	
-}
+
 
 static void allcoate_memory_for_adjacency_list(int nb_node, int nb_edge,int offset) {
   int i, block_size = 40960000, free_size = 0;
@@ -255,67 +257,6 @@ static void allcoate_memory_for_adjacency_list(int nb_node, int nb_edge,int offs
   }
 }
 
-static int _read_graph_from_adjacency_matrix(int** adj_matrix, int num_nodes) {
-  int j, l_node, r_node, nb_edge = 0, max_node = num_nodes, offset = 1;
-
-  // Init Node_Degree
-  memset(Node_Degree, 0, (max_node + 1) * sizeof(int));
-  // Count edges and degrees
-
-  for (l_node = 0; l_node < max_node; l_node++){
-    for (r_node = 0; r_node < l_node; r_node++){
-      if (adj_matrix[l_node][r_node] == 1) {
-        nb_edge++;
-        Node_Degree[l_node]++;
-        Node_Degree[r_node]++;
-      }
-    }
-  }
-  
-
-  NB_NODE = max_node;
-
-  // Allocate memory for Node_Neibors
-
-  Node_Neibors = (int **)malloc((NB_NODE + 1)*sizeof(int *));
-
-  allcoate_memory_for_adjacency_list(NB_NODE, nb_edge, 1);
- 
-  nb_edge = 0;
-  // Reset Node_Degree to use as a counter
-  memset(Node_Degree, 0, (NB_NODE + 1)* sizeof(int));
-  // Fill Node_Neibors
-  for (l_node = 1; l_node <= NB_NODE; l_node++){
-    for (r_node = 1; r_node < l_node; r_node++){
-      if (adj_matrix[l_node - 1][r_node - 1] == 1) {
-        for (j = 0; j < Node_Degree[l_node]; j++) {
-        if (Node_Neibors[l_node][j] == r_node) {
-          break;
-        }
-      }
-      if (j == Node_Degree[l_node]) {
-        Node_Neibors[l_node][Node_Degree[l_node]] = r_node;
-        Node_Neibors[r_node][Node_Degree[r_node]] = l_node;
-        Node_Degree[l_node]++;
-        Node_Degree[r_node]++;
-        nb_edge++;
-      }
-      }
-    
-    }
-  }
-  NB_EDGE = nb_edge;
-  Max_Degree = 0;
-  for_each_vertex(node) {
-    Node_Neibors[node][Node_Degree[node]] = NONE;
-    if (Node_Degree[node] > Max_Degree) {
-      Max_Degree = Node_Degree[node];
-      Max_Degree_Node = node;
-    }
-  }
-
-  return TRUE;
-}
 
 static int _read_graph_from_edge_list(int* edges, int n, int nb_edges) {
   int i, j, l_node, r_node, nb_edge = 0, max_node = n, offset = 0;
@@ -380,149 +321,12 @@ static int _read_graph_from_edge_list(int* edges, int n, int nb_edges) {
   }
   return TRUE;
 }
-
-static int _read_graph_from_file(char *input_file, int format) {
-  int j, l_node, r_node, nb_edge = 0, max_node = NONE, offset = 0;
-  int node = 1;
-  char line[128], word[10];
-  FILE* fp_in = fopen(input_file, "r");
-	
-  if (fp_in == NULL ) {
-    printf("Error: fail to open file %s\n", input_file);
-    return FALSE;
-  }
-	
-  if (format == 1)
-    printf("R reading file in format of <e n1 n2> with ");
-  else
-    printf("R reading file in format of <n1 n2> with ");
-	
-  memset(Node_Degree, 0, MAX_NODE*sizeof(int));
-	
-  while (fgets(line, 127, fp_in) != NULL ) {
-    if ((format == 1 && line[0] == 'e')
-	|| (format == 2 && line[0] != '%')) {
-      if (format == 1)
-	sscanf(line, "%s%d%d", word, &l_node, &r_node);
-      else
-	sscanf(line, "%d%d", &l_node, &r_node);
-      if (l_node >= 0 && r_node >= 0 && l_node != r_node) {
-				
-	nb_edge++;
-				
-	if (l_node > max_node)
-	  max_node = l_node;
-	if (r_node > max_node)
-	  max_node = r_node;
-				
-	if (offset ==0 && (l_node == 0 || r_node == 0)){
-	  offset = 1;
-	}
-				
-	if (max_node+offset>=MAX_NODE) {
-	  printf("! The graph goes beyond the maximum size (%d) can be processed.\n",MAX_NODE);
-	  printf("! Please modify the definition of the variable MAX_NODE to fit the size.\n");
-	  exit(1);
-	}
-				
-	Node_Degree[l_node]++;
-	Node_Degree[r_node]++;
-				
-      }
-    }
-  }
-  NB_NODE = max_node;
-  NB_NODE = NB_NODE + offset;
-	
-  Node_Neibors = (int **) malloc((NB_NODE + 1) * sizeof(int *));
-  allcoate_memory_for_adjacency_list(NB_NODE, nb_edge, 1);
-  memset(Node_Degree, 0, (NB_NODE + 1) * sizeof(int));
-	
-  nb_edge = 0;
-  fseek(fp_in, 0L, SEEK_SET);
-  while (fgets(line, 127, fp_in) != NULL ) {
-    if ((format == 1 && line[0] == 'e')
-	|| (format == 2 && line[0] != '%')) {
-      if (format == 1)
-	sscanf(line, "%s%d%d", word, &l_node, &r_node);
-      else
-	sscanf(line, "%d%d", &l_node, &r_node);
-      if (l_node >= 0 && r_node >= 0 && l_node != r_node) {
-	if(offset){
-	  l_node +=offset;
-	  r_node +=offset;
-	}
-	for (j = 0; j < Node_Degree[l_node]; j++) {
-	  if (Node_Neibors[l_node][j] == r_node)
-	    break;
-	}
-	if (j == Node_Degree[l_node]) {
-	  Node_Neibors[l_node][Node_Degree[l_node]] = r_node;
-	  Node_Neibors[r_node][Node_Degree[r_node]] = l_node;
-	  Node_Degree[l_node]++;
-	  Node_Degree[r_node]++;
-	  nb_edge++;
-	}
-      }
-    }
-  }
-  
-  NB_EDGE = nb_edge;
-  Max_Degree = 0;
-  for (node = 1; node <= NB_NODE; node++) {
-    Node_Neibors[node][Node_Degree[node]] = NONE;		
-    if (Node_Degree[node] > Max_Degree){
-      Max_Degree = Node_Degree[node];
-      Max_Degree_Node=node;
-    }
-  }
-  //printf("Max Node=%d\n",Max_Degree_Node);
-  //UPPER_BOUND=Max_Degree+PARA.KX;
-  return TRUE;
-}
-
-
-static int read_instance(char *input_file) {
-  const char * fileStyle="clq";
-  if(strrchr(input_file, '.')!=NULL)
-    fileStyle = strrchr(input_file, '.') + 1;
-	
-  if (strcmp(fileStyle, "clq") == 0) {
-    _read_graph_from_file(input_file, 1);
-  } else if (strcmp(fileStyle, "edges") == 0) {
-    _read_graph_from_file(input_file, 2);
-  } else if (strcmp(fileStyle, "mtx") == 0) {
-    _read_graph_from_file(input_file, 2);
-  } else if (FORMAT == 1) {
-    _read_graph_from_file(input_file, 1);
-  } else if (FORMAT == 2) {
-    _read_graph_from_file(input_file, 2);
-  } else {
-    _read_graph_from_file(input_file, 1);
-  }
-  
-  NB_NODE_O = NB_NODE;
-  NB_EDGE_O = NB_EDGE;
-  D0 = ((float) NB_EDGE * 2 / NB_NODE / (NB_NODE - 1));
-	
-  READ_TIME = get_utime();
-  fflush(stdout);
-  return TRUE;
-}
    
 static void free_block() {
   int i = 0;
   for (i = 0; i < BLOCK_COUNT; i++)
     free(BLOCK_LIST[i]);
 }
-
-static char * getInstanceName(char *s) {
-  if (strrchr(s, '/') == NULL )
-    return s;
-  else
-    return strrchr(s, '/') + 1;
-}
-
 
 static int *dfn,*low,*TarStack,TarTop,CNT=0,*SonNum,*RecSta,RecTop,*LasSon,*LasNodeIndex;
 
