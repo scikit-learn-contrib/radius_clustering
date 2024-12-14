@@ -1,0 +1,34 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Radius Clustering
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Quentin
+    family-names: Haenn
+    email: quentin.haenn@ensma.fr
+    affiliation: LIAS Lab
+    orcid: 'https://orcid.org/0009-0009-1663-0107'
+  - given-names: Brice
+    family-names: Chardin
+    email: brice.chardin@ensma.fr
+    affiliation: LIAS Lab
+    orcid: 'https://orcid.org/0000-0002-9298-9447'
+  - given-names: Mickael
+    family-names: Baron
+    email: mickael.baron@ensma.fr
+    affiliation: LIAS Lab
+    orcid: 'https://orcid.org/0000-0002-3356-0835'
+  - name: LIAS Laboratory
+    address: 1 Avenue Clément Ader
+    city: Chasseneuil du Poitou
+    post-code: '86360'
+    website: 'https://www.lias-lab.fr'
+identifiers:
+  - type: swh
+    value: 'swh:1:rev:66f8d295cc5fbc80f356d11be46571bfbb190609'
+license: GPL-3.0
