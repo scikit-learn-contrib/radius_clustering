@@ -26,8 +26,6 @@ You can install Radius Clustering using pip:
 pip install radius-clustering
 ```
 
-> Note: This package is not yet available on PyPI. You may need to install it from the source.
-
 ## Usage
 
 Here's a basic example of how to use Radius Clustering:
@@ -53,7 +51,11 @@ print(labels)
 
 ## Documentation
 
-To build the documentation, you can run the following command, assuming you have Sphinx installed:
+You can find the full documentation for Radius Clustering [here](https://lias-laboratory.github.io/radius_clustering/).
+
+### Building the documentation
+
+To build the documentation, you can run the following command, assuming you have all dependencies needed installed:
 
 ```bash
 cd docs
@@ -73,7 +75,7 @@ If you want to know more about the experiments conducted with the package, pleas
 
 ## Contributing
 
-Contributions to MDS Clustering are welcome! Please feel free to submit a Pull Request.
+Contributions to Radius Clustering are welcome! Please feel free to submit a Pull Request.
 
 ## License
 

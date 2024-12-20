@@ -191,7 +191,6 @@ two vertices adj iif:
 */
 
 static inline  int is_2_adj(int marked_node,int test_node){
-  int adj=0, comneibor=0;
    for_each_neighbor(test_node,neibor){
      if(neibor==marked_node){
        if(!(branched(test_node) && branched(marked_node)))
@@ -534,7 +533,6 @@ static int partition_free_vertices(){
 }
 
 static inline  void clear_iset(int isetno,int insert_node){
-  int marked_count=0;
   int involved=involved(insert_node);
   USED(TMP_STK)=0;
   for_each_vec_item(iSET[isetno],int,it){
@@ -570,7 +568,6 @@ static inline  void clear_iset(int isetno,int insert_node){
 static int improve_partition(int maxlb,int target){
   for(int i=SUB_PROBLEM_SIZE-1;i>=CUR_UND_IDX;i--){
     int node=CFG[i];
-    int inserted=0;
 
     set_marked_status(node);
     for_each_neighbor(node,neibor){   
@@ -634,7 +631,6 @@ static int repartition_vertices(int maxlb){
 	set_marked_status(neibor);
     }
 
-    int inserted=0;
     for(int j=isno(node)+1;j<MAXIS;j++){
       if(USED(iSET[j])==0){
 	break;
@@ -861,7 +857,7 @@ static int dominated_number(int bnode){
 }
 
 int max_dominated_number(){
-  int max_count=0,max_idx=-1;
+  int max_count=0;
   for(int i=CUR_BRA_IDX,bnode=BNODE(i);bnode!=NONE;bnode=BNODE(++i)){
     int count= dominated_number(bnode);
     if(count>max_count)
@@ -1382,16 +1378,6 @@ void solve_subproblems(){
   }while(ptr<end);
 }
 
-static void print_final_solution(char *inst){
-   printf("--------------------------------\n");
-   printf("Solution: ");
-     for(size_t i=0;i<USED(VEC_SOLUTION);i++){
-     printf("%d ",ITEM(VEC_SOLUTION,i));
-  }
-      printf("\n");
-      printf(">>> %s |V| %d |E| %d FIXED %d INIT %d BEST %d TREE %llu TIME(s) %0.2lf\n",inst,NB_NODE,NB_EDGE,NB_FIXED,INIT_UPPER_BOUND,USED(VEC_SOLUTION),NB_TREE, get_utime());
-}
-
 // Define global variables
 extern unsigned long long total_branches = 0;
 extern unsigned long long pruned_branches = 0;
@@ -1513,6 +1499,43 @@ void check_consistance(){
 
 
 void cleanup(){
+
+  // Free all allocated memory
+  if (CFG != NULL) {
+    free(CFG);
+    CFG = NULL;
+  }
+  if (LOC != NULL) {
+    free(LOC);
+    LOC = NULL;
+  }
+  if (STATUS != NULL) {
+    free(STATUS);
+    STATUS = NULL;
+  }
+  if (PID != NULL) {
+    free(PID);
+    PID = NULL;
+  }
+  free_stack(BRA_STK);
+  free_stack(FIX_STK);
+  free_stack(TMP_STK);
+  free_stack(ADJ_STK);
+  free_stack(VEC_SOLUTION);
+  free_stack(VEC_SUBGRAPHS);
+
+  for (int i = 0; i <= MAXIS; i++) {
+    free_stack(iSET[i]);
+  }
+
+  if (ADJIDX != NULL) {
+    free(ADJIDX);
+    ADJIDX = NULL;
+  }
+
+
+
+  free_block();
   // Reset all global variables
   BLOCK_COUNT = 0;
   NB_NODE = 0;
@@ -1541,59 +1564,6 @@ void cleanup(){
   CUT_OFF = 0;
   BEST_SOL_TIME = 0;
   instance[0] = '\0';
-  
-  // Free all allocated memory
-  if (CFG != NULL) {
-    free(CFG);
-    CFG = NULL;
-  }
-  if (LOC != NULL) {
-    free(LOC);
-    LOC = NULL;
-  }
-  if (STATUS != NULL) {
-    free(STATUS);
-    STATUS = NULL;
-  }
-  if (PID != NULL) {
-    free(PID);
-    PID = NULL;
-  }
-  if (BRA_STK != NULL) {
-    free(BRA_STK);
-    BRA_STK = NULL;
-  }
-  if (FIX_STK != NULL) {
-    free(FIX_STK);
-    FIX_STK = NULL;
-  }
-  if (TMP_STK != NULL) {
-    free(TMP_STK);
-    TMP_STK = NULL;
-  }
-  if (ADJ_STK != NULL) {
-    free(ADJ_STK);
-    ADJ_STK = NULL;
-  }
-  if (ADJIDX != NULL) {
-    free(ADJIDX);
-    ADJIDX = NULL;
-  }
-  if (VEC_SOLUTION != NULL) {
-    free(VEC_SOLUTION);
-    VEC_SOLUTION = NULL;
-  }
-  if (VEC_SUBGRAPHS != NULL) {
-    free(VEC_SUBGRAPHS);
-    VEC_SUBGRAPHS = NULL;
-  }
-  
-  for (int i = 0; i <= MAXIS; i++) {
-    if (iSET[i] != NULL) {
-      free(iSET[i]);
-      iSET[i] = NULL;
-    }
-  }
 }
 
 
