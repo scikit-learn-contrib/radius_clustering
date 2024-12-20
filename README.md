@@ -26,8 +26,6 @@ You can install Radius Clustering using pip:
 pip install radius-clustering
 ```
 
-> Note: This package is not yet available on PyPI. You may need to install it from the source. See [the documentation](https://lias-laboratory.github.io/radius_clustering/installation.html) for more details.
-
 ## Usage
 
 Here's a basic example of how to use Radius Clustering:
