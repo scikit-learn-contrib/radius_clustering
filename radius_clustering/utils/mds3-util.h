@@ -766,9 +766,9 @@ extern void search_domset();
 extern int fast_search_initial_solution();
 extern void solve_subproblems();
 extern struct Result* emos_main(int* edges, int n, int nb_edge);
-extern int* get_dominating_set();
-extern int get_set_size();
-extern double get_exec_time();
+extern int* get_dominating_set(struct Result* result);
+extern int get_set_size(struct Result* result);
+extern double get_exec_time(struct Result* result);
 extern void free_results(struct Result* result);
 
 // Declare global variables as extern
