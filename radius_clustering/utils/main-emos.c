@@ -12,11 +12,16 @@ Copyright (C) 2024, Haenn Quentin.
 #include <string.h>
 #include <signal.h>
 #include <time.h>
-#include <sys/times.h>
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__APPLE__) || defined(__linux__)
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/types.h>
+#else
+#error "Unsupported platform"
 #include <limits.h>
 #include <unistd.h>
-#include <sys/resource.h>
 #include <math.h>
 #include <assert.h>
 #include "mds3-util.h"
