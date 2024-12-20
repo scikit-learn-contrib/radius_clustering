@@ -15,8 +15,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__APPLE__) || defined(__linux__)
 #include <sys/time.h>
 #include <sys/resource.h>
+#else
+#error "Unsupported platform"
+#endif
 
 #define WORD_LENGTH 100
 #define TRUE 1
@@ -200,10 +208,27 @@ struct Result {
 };
 
 static double get_utime() {
-  struct rusage utime;
-  getrusage(RUSAGE_SELF, &utime);
-  return (double) (utime.ru_utime.tv_sec
-		   + (double) utime.ru_utime.tv_usec / 1000000);
+  #ifdef _WIN32
+      FILETIME createTime;
+      FILETIME exitTime;
+      FILETIME kernelTime;
+      FILETIME userTime;
+      if (GetProcessTimes(GetCurrentProcess(),
+                          &createTime, &exitTime,
+                          &kernelTime, &userTime) != 0) {
+         ULARGE_INTEGER li = {{userTime.dwLowDateTime, userTime.dwHighDateTime}};
+         return li.QuadPart * 1e-7;
+      }
+        return 0.0;
+  #elif defined(__APPLE__) || defined(__linux__)
+    struct rusage utime;
+    if (getrusage(RUSAGE_SELF, &utime) == 0) {
+      return (double)utime.ru_utime.tv_sec + (double)utime.ru_utime.tv_usec * 1e-6;
+    }
+    return 0.0;
+  #else
+    return (double)clock() / CLOCKS_PER_SEC;
+  #endif
 }
 
 static int cmp_branching_vertex_score(const void * a, const void *b){
