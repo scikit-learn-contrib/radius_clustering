@@ -143,4 +143,4 @@ docstring-code-line-length = "dynamic"
 
 [tool.cibuildwheel]
 # Skip building for PyPy, python 3.6/7/8 and 13t, and 32-bit platforms.
-skip = ["pp*", "cp36-*", "cp37-*", "cp38-*", "*-win32", "*-manylinux_i686"]
+skip = ["pp*", "cp36-*", "cp37-*", "cp38-*", "*-win32", "*linux_i686", "*musllinux*"]
