@@ -20,6 +20,7 @@ Copyright (C) 2024, Haenn Quentin.
 #include <sys/types.h>
 #else
 #error "Unsupported platform"
+#endif
 #include <limits.h>
 #include <unistd.h>
 #include <math.h>
