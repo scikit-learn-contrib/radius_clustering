@@ -10,15 +10,27 @@ Copyright (C) 2024, Haenn Quentin.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <time.h>
-#include <sys/times.h>
-#include <sys/types.h>
-#include <limits.h>
-#include <unistd.h>
-#include <sys/resource.h>
-#include <math.h>
 #include <assert.h>
+#include <math.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #include <process.h>
+    #include <direct.h>
+    #define SIGINT 2
+    typedef void (*SignalHandlerFn)(int);
+#elif defined(__APPLE__) || defined(__linux__)
+    #include <sys/time.h>
+    #include <sys/resource.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <signal.h>
+#else
+    #error "Unsupported platform"
+#endif
+
+
 #include "mds3-util.h"
 #include "util_heap.h"
 
@@ -1373,7 +1385,7 @@ void solve_subproblems(){
 static void print_final_solution(char *inst){
    printf("--------------------------------\n");
    printf("Solution: ");
-     for(int i=0;i<USED(VEC_SOLUTION);i++){
+     for(size_t i=0;i<USED(VEC_SOLUTION);i++){
      printf("%d ",ITEM(VEC_SOLUTION,i));
   }
       printf("\n");
@@ -1476,7 +1488,7 @@ void check_consistance(){
     assert(!domed(CFG[i]));
   }
   int level=-1;
-  for(int idx=0;idx<USED(BRA_STK);idx++){
+  for(size_t idx=0;idx<USED(BRA_STK);idx++){
     if(ITEM(BRA_STK,idx)==NONE){
       level++;
     }else if(idx<=BRAIDX[level])
@@ -1584,15 +1596,35 @@ void cleanup(){
   }
 }
 
+
 void handler(int sig) {
   cleanup();
   exit(sig);
 }
 
-struct Result* emos_main(int* edges, int n, int nb_edge) {
+#ifdef _WIN32
+static BOOL WINAPI win32_handler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        handler(SIGINT);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static void setup_signal_handler(SignalHandlerFn handler_fn) {
+    SetConsoleCtrlHandler(win32_handler, TRUE);
+}
+#else
+static void setup_signal_handler(void (*handler_fn)(int)) {
+    signal(SIGINT, handler_fn);
+}
+#endif
+
+
+struct Result* emos_main(unsigned int* edges, int n, int nb_edge) {
 
     // Set the signal handler
-  signal(SIGINT, handler);
+  setup_signal_handler(handler);
 
   _read_graph_from_edge_list(edges, n, nb_edge);
   NB_NODE_O = NB_NODE;
@@ -1614,7 +1646,7 @@ struct Result* emos_main(int* edges, int n, int nb_edge) {
 
   // Get the results
   int* dominating_set = (int*)malloc(USED(VEC_SOLUTION) * sizeof(int));
-  for (int i= 0; i<USED(VEC_SOLUTION); i++) {
+  for (size_t i= 0; i<USED(VEC_SOLUTION); i++) {
     dominating_set[i] = ITEM(VEC_SOLUTION, i);
   }
 
@@ -1645,22 +1677,4 @@ void free_results(struct Result* result) {
         free(result);
     }
 }
-
-/** int main(int argc, char *argv[]) {
-
-  print_compile_options();
-  parse_parmerters(argc,argv);
-  if(read_instance(argv[1])) {
-    initialize();
-    #ifndef NOR
-    reduce_graph();
-    #endif
-    partition_oneproblem();    
-    solve_subproblems();
-    check_final_solution();
-    print_final_solution(getInstanceName(argv[1]));
-    printf("### %s pruning rate %0.2lf total %llu pruned %llu\n",getInstanceName(argv[1]), (total_branches-pruned_branches)/((double)total_branches),total_branches,total_branches-pruned_branches);
-  }	   
-  return 0;
-} */
 	

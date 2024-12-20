@@ -8,12 +8,10 @@
  */
 #include <vector>
 #include <unordered_set>
-#include <set>  // Add this line
 #include <algorithm>
 #include <random>
 #include <chrono>
 #include <cmath>
-#include <iostream>
 #include <csignal>
 #include <limits>
 #include "random_manager.h"
@@ -92,19 +90,7 @@ private:
     std::unordered_set<int> supportNodes;
     std::unordered_set<int> leavesNodes;
     std::unordered_set<int> unSelectedNodes;
-    int optimum;
     const bool supportAndLeafNodes = true;
-
-    /*
-    void constructAdjacencyList(const std::vector<std::vector<int>>& adjacency_matrix) {
-        for (int i = 0; i < numNodes; ++i) {
-            for (int j = 0; j < numNodes; ++j) {
-                if (adjacency_matrix[i][j] == 1) {
-                    adjacencyList[i].push_back(j);
-                }
-            }
-        }
-    }*/
 
     void constructAdjacencyList(const std::vector<int>& edge_list, int nb_edges) {
         for (int i = 0; i < 2 * nb_edges; i+=2) {
