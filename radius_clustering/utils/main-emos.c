@@ -1622,7 +1622,7 @@ void handler(int sig) {
 struct Result* emos_main(int* edges, int n, int nb_edge) {
 
     // Set the signal handler
-  setup_signal_handler(SIGINT, handler);
+  setup_signal_handler(handler);
 
   _read_graph_from_edge_list(edges, n, nb_edge);
   NB_NODE_O = NB_NODE;
