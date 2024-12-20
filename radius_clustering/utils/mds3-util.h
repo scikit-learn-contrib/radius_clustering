@@ -15,8 +15,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__APPLE__) || defined(__linux__)
 #include <sys/time.h>
 #include <sys/resource.h>
+#else
+#error "Unsupported platform"
+#endif
 
 #define WORD_LENGTH 100
 #define TRUE 1
@@ -208,10 +216,27 @@ struct Result {
 };
 
 static double get_utime() {
-  struct rusage utime;
-  getrusage(RUSAGE_SELF, &utime);
-  return (double) (utime.ru_utime.tv_sec
-		   + (double) utime.ru_utime.tv_usec / 1000000);
+  #ifdef _WIN32
+      FILETIME createTime;
+      FILETIME exitTime;
+      FILETIME kernelTime;
+      FILETIME userTime;
+      if (GetProcessTimes(GetCurrentProcess(),
+                          &createTime, &exitTime,
+                          &kernelTime, &userTime) != 0) {
+         ULARGE_INTEGER li = {{userTime.dwLowDateTime, userTime.dwHighDateTime}};
+         return li.QuadPart * 1e-7;
+      }
+        return 0.0;
+  #elif defined(__APPLE__) || defined(__linux__)
+    struct rusage utime;
+    if (getrusage(RUSAGE_SELF, &utime) == 0) {
+      return (double)utime.ru_utime.tv_sec + (double)utime.ru_utime.tv_usec * 1e-6;
+    }
+    return 0.0;
+  #else
+    return (double)clock() / CLOCKS_PER_SEC;
+  #endif
 }
 
 static int cmp_branching_vertex_score(const void * a, const void *b){
@@ -232,7 +257,8 @@ static int NB_FIXED=0,NEW_IDX=0,NB_UNFIXED=0;
 
 
 static void allcoate_memory_for_adjacency_list(int nb_node, int nb_edge,int offset) {
-  int i, block_size = 40960000, free_size = 0;
+  int i, block_size = 40960000;
+  unsigned int free_size = 0;
   Init_Adj_List = (int *) malloc((2 * nb_edge + nb_node) * sizeof(int));
   if (Init_Adj_List == NULL ) {
     for (i = 1; i <= NB_NODE; i++) {
@@ -258,7 +284,7 @@ static void allcoate_memory_for_adjacency_list(int nb_node, int nb_edge,int offs
 }
 
 
-static int _read_graph_from_edge_list(int* edges, int n, int nb_edges) {
+static int _read_graph_from_edge_list(unsigned int* edges, int n, int nb_edges) {
   int i, j, l_node, r_node, nb_edge = 0, max_node = n, offset = 0;
   int node = 1;
 
@@ -544,10 +570,10 @@ extern int select_branching_node();
 extern void search_domset();
 extern int fast_search_initial_solution();
 extern void solve_subproblems();
-extern struct Result* emos_main(int* edges, int n, int nb_edge);
-extern int* get_dominating_set();
-extern int get_set_size();
-extern double get_exec_time();
+extern struct Result* emos_main(unsigned int* edges, int n, int nb_edge);
+extern int* get_dominating_set(struct Result* result);
+extern int get_set_size(struct Result* result);
+extern double get_exec_time(struct Result* result);
 extern void free_results(struct Result* result);
 
 // Declare global variables as extern

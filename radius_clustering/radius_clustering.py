@@ -10,7 +10,7 @@ This module serves as the main interface for the Radius clustering library.
 
 import os
 import numpy as np
-import scipy.spatial as sp_spatial
+from sklearn.metrics import pairwise_distances
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import check_array
 
@@ -38,7 +38,7 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
     -----------
     X : array-like, shape (n_samples, n_features)
         The input data.
-    centers : list
+    centers\_ : list
         The indices of the cluster centers.
     labels\_ : array-like, shape (n_samples,)
         The cluster labels for each point in the input data.
@@ -49,6 +49,9 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
     def __init__(self, manner="approx", threshold=0.5):
         self.manner = manner
         self.threshold = threshold
+
+    def _check_symmetric(self, a, tol=1e-8):
+        return np.allclose(a, a.T, atol=tol)
 
     def fit(self, X, y=None):
         """
@@ -87,10 +90,19 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         self.X = check_array(X)
 
         # Create dist and adj matrices
-        dist_mat = sp_spatial.distance_matrix(self.X, self.X)
+        if not self._check_symmetric(self.X):
+            dist_mat = pairwise_distances(self.X, metric="euclidean")
+        else:
+            dist_mat = self.X
         adj_mask = np.triu((dist_mat <= self.threshold), k=1)
         self.nb_edges = np.sum(adj_mask)
-        self.edges = np.argwhere(adj_mask).astype(np.int32)
+        if self.nb_edges == 0:
+            self.centers_ = list(range(self.X.shape[0]))
+            self.labels_ = self.centers_
+            self.effective_radius = 0
+            self._mds_exec_time = 0
+            return self
+        self.edges = np.argwhere(adj_mask).astype(np.uint32) #TODO: changer en uint32
         self.dist_mat = dist_mat
 
         self._clustering()

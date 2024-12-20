@@ -9,6 +9,7 @@ description = "A Clustering under radius constraints algorithm using minimum dom
 readme = "README.md"
 authors = [
     {name = "Quentin Haenn"},
+    {name = "Lias Laboratory"}
 ]
 
 dependencies = [
@@ -37,6 +38,7 @@ classifiers=[
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 keywords = ["Unsupervised learning","clustering", "minimum dominating sets","clustering under radius constraint"]
@@ -137,3 +139,8 @@ docstring-code-format = true
 # Set the line length limit used when formatting code snippets in
 # docstrings.
 docstring-code-line-length = "dynamic"
+
+
+[tool.cibuildwheel]
+# Skip building for PyPy, python 3.6/7/8 and 13t, and 32-bit platforms.
+skip = ["pp*", "cp36-*", "cp37-*", "cp38-*", "*-win32", "*linux_i686", "*musllinux*"]
