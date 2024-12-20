@@ -10,21 +10,27 @@ Copyright (C) 2024, Haenn Quentin.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <time.h>
-#ifdef _WIN32
-#include <windows.h>
-#elif defined(__APPLE__) || defined(__linux__)
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#else
-#error "Unsupported platform"
-#endif
-#include <limits.h>
-#include <unistd.h>
-#include <math.h>
 #include <assert.h>
+#include <math.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #include <process.h>
+    #include <direct.h>
+    #define SIGINT 2
+    typedef void (*SignalHandlerFn)(int);
+#elif defined(__APPLE__) || defined(__linux__)
+    #include <sys/time.h>
+    #include <sys/resource.h>
+    #include <sys/types.h>
+    #include <unistd.h>
+    #include <signal.h>
+#else
+    #error "Unsupported platform"
+#endif
+
+
 #include "mds3-util.h"
 #include "util_heap.h"
 
@@ -1590,6 +1596,24 @@ void cleanup(){
   }
 }
 
+#ifdef _WIN32
+static BOOL WINAPI win32_handler(DWORD signal) {
+    if (signal == CTRL_C_EVENT) {
+        handler(SIGINT);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static void setup_signal_handler(SignalHandlerFn handler_fn) {
+    SetConsoleCtrlHandler(win32_handler, TRUE);
+}
+#else
+static void setup_signal_handler(void (*handler_fn)(int)) {
+    signal(SIGINT, handler_fn);
+}
+#endif
+
 void handler(int sig) {
   cleanup();
   exit(sig);
@@ -1598,7 +1622,7 @@ void handler(int sig) {
 struct Result* emos_main(int* edges, int n, int nb_edge) {
 
     // Set the signal handler
-  signal(SIGINT, handler);
+  setup_signal_handler(SIGINT, handler);
 
   _read_graph_from_edge_list(edges, n, nb_edge);
   NB_NODE_O = NB_NODE;
