@@ -255,7 +255,8 @@ static void parse_parmerters(int argc, char *argv[]) {
 }
 
 static void allcoate_memory_for_adjacency_list(int nb_node, int nb_edge,int offset) {
-  int i, block_size = 40960000, free_size = 0;
+  int i, block_size = 40960000;
+  unsigned int free_size = 0;
   Init_Adj_List = (int *) malloc((2 * nb_edge + nb_node) * sizeof(int));
   if (Init_Adj_List == NULL ) {
     for (i = 1; i <= NB_NODE; i++) {
