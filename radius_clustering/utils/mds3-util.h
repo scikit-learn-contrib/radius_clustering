@@ -342,7 +342,7 @@ static int _read_graph_from_adjacency_matrix(int** adj_matrix, int num_nodes) {
   return TRUE;
 }
 
-static int _read_graph_from_edge_list(int* edges, int n, int nb_edges) {
+static int _read_graph_from_edge_list(unsigned int* edges, int n, int nb_edges) {
   int i, j, l_node, r_node, nb_edge = 0, max_node = n, offset = 0;
   int node = 1;
 
@@ -765,7 +765,7 @@ extern int select_branching_node();
 extern void search_domset();
 extern int fast_search_initial_solution();
 extern void solve_subproblems();
-extern struct Result* emos_main(int* edges, int n, int nb_edge);
+extern struct Result* emos_main(unsigned int* edges, int n, int nb_edge);
 extern int* get_dominating_set(struct Result* result);
 extern int get_set_size(struct Result* result);
 extern double get_exec_time(struct Result* result);

@@ -17,7 +17,7 @@ cdef extern from "mds3-util.h":
         int set_size
         double exec_time
 
-    Result* emos_main(int* edges, int nb_edge, int n)
+    Result* emos_main(unsigned int* edges, int nb_edge, int n)
 
     void cleanup()
 
@@ -26,7 +26,7 @@ cdef extern from "mds3-util.h":
 import numpy as np
 cimport numpy as np
 
-def py_emos_main(np.ndarray[int, ndim=1] edges, int n, int nb_edge):
+def py_emos_main(np.ndarray[unsigned int, ndim=1] edges, int n, int nb_edge):
     cdef Result* result = emos_main(&edges[0], n, nb_edge)
 
     dominating_set = [result.dominating_set[i] - 1 for i in range(result.set_size)]

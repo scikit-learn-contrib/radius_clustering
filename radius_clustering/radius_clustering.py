@@ -102,7 +102,7 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
             self.effective_radius = 0
             self._mds_exec_time = 0
             return self
-        self.edges = np.argwhere(adj_mask).astype(np.int32) #TODO: changer en uint32
+        self.edges = np.argwhere(adj_mask).astype(np.uint32) #TODO: changer en uint32
         self.dist_mat = dist_mat
 
         self._clustering()

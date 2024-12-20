@@ -1385,7 +1385,7 @@ void solve_subproblems(){
 static void print_final_solution(char *inst){
    printf("--------------------------------\n");
    printf("Solution: ");
-     for(int i=0;i<USED(VEC_SOLUTION);i++){
+     for(size_t i=0;i<USED(VEC_SOLUTION);i++){
      printf("%d ",ITEM(VEC_SOLUTION,i));
   }
       printf("\n");
@@ -1488,7 +1488,7 @@ void check_consistance(){
     assert(!domed(CFG[i]));
   }
   int level=-1;
-  for(int idx=0;idx<USED(BRA_STK);idx++){
+  for(size_t idx=0;idx<USED(BRA_STK);idx++){
     if(ITEM(BRA_STK,idx)==NONE){
       level++;
     }else if(idx<=BRAIDX[level])
@@ -1596,6 +1596,12 @@ void cleanup(){
   }
 }
 
+
+void handler(int sig) {
+  cleanup();
+  exit(sig);
+}
+
 #ifdef _WIN32
 static BOOL WINAPI win32_handler(DWORD signal) {
     if (signal == CTRL_C_EVENT) {
@@ -1614,12 +1620,8 @@ static void setup_signal_handler(void (*handler_fn)(int)) {
 }
 #endif
 
-void handler(int sig) {
-  cleanup();
-  exit(sig);
-}
 
-struct Result* emos_main(int* edges, int n, int nb_edge) {
+struct Result* emos_main(unsigned int* edges, int n, int nb_edge) {
 
     // Set the signal handler
   setup_signal_handler(handler);
@@ -1644,7 +1646,7 @@ struct Result* emos_main(int* edges, int n, int nb_edge) {
 
   // Get the results
   int* dominating_set = (int*)malloc(USED(VEC_SOLUTION) * sizeof(int));
-  for (int i= 0; i<USED(VEC_SOLUTION); i++) {
+  for (size_t i= 0; i<USED(VEC_SOLUTION); i++) {
     dominating_set[i] = ITEM(VEC_SOLUTION, i);
   }
 
@@ -1675,22 +1677,4 @@ void free_results(struct Result* result) {
         free(result);
     }
 }
-
-/** int main(int argc, char *argv[]) {
-
-  print_compile_options();
-  parse_parmerters(argc,argv);
-  if(read_instance(argv[1])) {
-    initialize();
-    #ifndef NOR
-    reduce_graph();
-    #endif
-    partition_oneproblem();    
-    solve_subproblems();
-    check_final_solution();
-    print_final_solution(getInstanceName(argv[1]));
-    printf("### %s pruning rate %0.2lf total %llu pruned %llu\n",getInstanceName(argv[1]), (total_branches-pruned_branches)/((double)total_branches),total_branches,total_branches-pruned_branches);
-  }	   
-  return 0;
-} */
 	
