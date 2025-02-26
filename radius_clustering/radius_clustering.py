@@ -51,6 +51,10 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         self.threshold = threshold
 
     def _check_symmetric(self, a, tol=1e-8):
+        if a.ndim != 2:
+            raise ValueError("Input must be a 2D array.")
+        if a.shape[0] != a.shape[1]:
+            return False
         return np.allclose(a, a.T, atol=tol)
 
     def fit(self, X, y=None):
