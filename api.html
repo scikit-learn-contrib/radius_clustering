@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -40,10 +40,10 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/custom.css?v=29a1de8a" />
   
   <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=f2a433a1"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
@@ -373,9 +373,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -422,7 +427,7 @@
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-radius_clustering" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">radius_clustering.</span></span><span class="sig-name descname"><span class="pre">RadiusClustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'approx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">radius_clustering.</span></span><span class="sig-name descname"><span class="pre">RadiusClustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'approx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterMixin</span></code></p>
 <p>Radius Clustering algorithm.</p>
 <p>This class implements clustering based on the Minimum Dominating Set (MDS) problem.
@@ -441,7 +446,7 @@ It can use either an exact or approximate method for solving the MDS problem.</p
 <dl class="simple">
 <dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data.</p>
 </dd>
-<dt>centers<span class="classifier">list</span></dt><dd><p>The indices of the cluster centers.</p>
+<dt>centers_<span class="classifier">list</span></dt><dd><p>The indices of the cluster centers.</p>
 </dd>
 <dt>labels_<span class="classifier">array-like, shape (n_samples,)</span></dt><dd><p>The cluster labels for each point in the input data.</p>
 </dd>
@@ -575,13 +580,13 @@ see <a class="reference internal" href="auto_examples/plot_iris_example.html#sph
   </nav></div>
 
   <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="_sources/api.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
 
 </div></div>
               
@@ -596,8 +601,8 @@ see <a class="reference internal" href="auto_examples/plot_iris_example.html#sph
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
