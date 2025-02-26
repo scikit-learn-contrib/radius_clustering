@@ -79,7 +79,14 @@ doc = [
 ]
 
 [tool.setuptools]
-packages = ["radius_clustering"]
+packages.find = {where = ["src"], include = ["radius_clustering", "radius_clustering.*"]}
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
+addopts = [
+    "--import-mode=importlib",
+]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

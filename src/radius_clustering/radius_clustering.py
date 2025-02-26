@@ -51,6 +51,10 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         self.threshold = threshold
 
     def _check_symmetric(self, a, tol=1e-8):
+        if a.ndim != 2:
+            raise ValueError("Input must be a 2D array.")
+        if a.shape[0] != a.shape[1]:
+            return False
         return np.allclose(a, a.T, atol=tol)
 
     def fit(self, X, y=None):
@@ -172,7 +176,7 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         This function uses the approximation method to solve the MDS problem.
         See [casado]_ for more details.
         """
-        result = solve_mds(n, self.edges.flatten(), self.nb_edges, "test")
+        result = solve_mds(n, self.edges.flatten().astype(np.int32), self.nb_edges, "test")
         self.centers_ = [x for x in result["solution_set"]]
         self._mds_exec_time = result["Time"]
 

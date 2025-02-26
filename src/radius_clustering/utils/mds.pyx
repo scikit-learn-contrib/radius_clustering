@@ -39,7 +39,7 @@ cdef extern from "mds_core.cpp":
 
     cdef Result iterated_greedy_wrapper(int numNodes, const vector[int]& edges_list, int nb_edges, string name) nogil
 
-def solve_mds(int num_nodes, np.ndarray[int, ndim=1, mode="c"] edges not None, int nb_edges, str name):
+def solve_mds(int num_nodes, np.ndarray[np.uint32_t, ndim=1, mode="c"] edges not None, int nb_edges, str name):
     """
     Solve the Minimum Dominating Set problem for a given graph.
 
