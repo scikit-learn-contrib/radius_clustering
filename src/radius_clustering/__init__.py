@@ -4,4 +4,4 @@ from .radius_clustering import RadiusClustering
 __all__ = ["RadiusClustering"]
 
 # Optionally, you can set a version number for your package
-__version__ = "1.2.0"
+__version__ = "1.2.1"
