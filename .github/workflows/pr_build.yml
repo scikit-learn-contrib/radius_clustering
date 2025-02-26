@@ -1,0 +1,44 @@
+name: PR Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run_pytest:
+        name: Run pytest
+        uses: ./.github/workflows/tests.yml
+        
+  build_test_wheels:
+    name: Test build on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        with:
+          package-dir: .
+          output-dir: ./wheelhouse
+          config-file: "{package}/pyproject.toml"
+
+      - name: Test import
+        run: |
+          pip install ./wheelhouse/*.whl
+          python -c "import radius_clustering; print(f'Successfully imported version {radius_clustering.__version__}')"
+
+  build_test_sdist:
+    name: Test source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - name: Test sdist
+        run: |
+          pip install ./dist/*.tar.gz
+          python -c "import radius_clustering; print(f'Successfully imported version {radius_clustering.__version__}')"
