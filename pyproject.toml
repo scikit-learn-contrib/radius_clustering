@@ -51,6 +51,7 @@ documentation = "https://lias-laboratory.github.io/radius_clustering/"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.3",
+    "pandas",
     "cython>=3.0",
     "setuptools>= 61.0",
     "black>=24.3.0",
