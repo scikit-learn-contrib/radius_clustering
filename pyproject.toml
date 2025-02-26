@@ -80,7 +80,7 @@ doc = [
 
 [tool.setuptools]
 packages.find = {where = ["src"], include = ["radius_clustering", "radius_clustering.*"]}
-version = {attr = "radius_clustering.__version__"}
+dynamic.version = {attr = "radius_clustering.__version__"}
 
 [tool.pytest.ini_options]
 pythonpath = "src"
