@@ -176,7 +176,7 @@ class RadiusClustering(BaseEstimator, ClusterMixin):
         This function uses the approximation method to solve the MDS problem.
         See [casado]_ for more details.
         """
-        result = solve_mds(n, self.edges.flatten(), self.nb_edges, "test")
+        result = solve_mds(n, self.edges.flatten().astype(np.int32), self.nb_edges, "test")
         self.centers_ = [x for x in result["solution_set"]]
         self._mds_exec_time = result["Time"]
 
