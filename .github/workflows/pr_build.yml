@@ -10,10 +10,14 @@ jobs:
   run_pytest:
         name: Run pytest
         uses: ./.github/workflows/tests.yml
-        
+
   build_test_wheels:
     name: Test build on Ubuntu
     runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+          python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
 
@@ -23,10 +27,19 @@ jobs:
           package-dir: .
           output-dir: ./wheelhouse
           config-file: "{package}/pyproject.toml"
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Test import
         run: |
-          pip install ./wheelhouse/*.whl
+          PY_VERSION=$(echo ${{ matrix.python-version }} | sed 's/\.//g')
+
+          ls -la ./wheelhouse/
+          
+          pip install ./wheelhouse/*cp${PY_VERSION}*.whl
           python -c "import radius_clustering; print(f'Successfully imported version {radius_clustering.__version__}')"
 
   build_test_sdist:
