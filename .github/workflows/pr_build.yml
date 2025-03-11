@@ -12,7 +12,7 @@ jobs:
         uses: ./.github/workflows/tests.yml
 
   build_test_wheels:
-    name: Test build on Ubuntu
+    name: Test build on Self-Hosted Runner
     runs-on: self-hosted
     strategy:
         fail-fast: false
