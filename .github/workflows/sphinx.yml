@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - docs
+    paths:
+      - "docs/**"
+      - "src/radius_clustering/**"
 
 jobs:
   build:

@@ -102,14 +102,6 @@ jobs:
           pattern: cibw-*
           path: dist/
           merge-multiple: true
-      - name: Test presence of artifacts
-        # This step is not necessary, but it can be useful for debugging
-        # and to check where the artifacts are downloaded
-        # and if they are downloaded correctly
-        # It will list all files in the current directory and its subdirectories
-        run : |
-          # Test if the artifacts are downloaded correctly and where they are
-          ls -R
 
       - name: Generate artifact attestations
         uses: actions/attest-build-provenance@v2
@@ -119,5 +111,5 @@ jobs:
       - name: Publish Distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          package-dir: ~/dist/
+          packages-dir: ./dist/
           # To test: repository-url: https://test.pypi.org/legacy/
