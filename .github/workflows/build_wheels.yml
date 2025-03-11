@@ -14,9 +14,34 @@ on:
       - published
 
 jobs:
+  run_pytest:
+    name: Run tests on min and max Python versions
+    runs-on: self-hosted
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run tests with pytest
+        run: |
+          pytest -v
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: run_pytest
     strategy:
       fail-fast: false 
       matrix:
@@ -37,6 +62,7 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: self-hosted
+    needs: run_pytest
     steps:
       - uses: actions/checkout@v4
 
