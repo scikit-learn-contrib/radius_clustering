@@ -14,6 +14,7 @@ jobs:
   build_test_sdist:
     name: Test source distribution
     runs-on: self-hosted
+    needs: run_pytest
     strategy:
       fail-fast: true
       matrix:
