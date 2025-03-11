@@ -84,7 +84,7 @@ jobs:
 
   upload_pypi:
     needs: [build_wheels, build_sdist]
-    runs-on: self-hosted # cannot self host because the next action uses GITHUB_WORKSPACE env variable automatically within the action
+    runs-on: ubuntu-latest # cannot self host because the next action uses GITHUB_WORKSPACE env variable automatically within the action
     environment: 
       name: pypi
       url: https://pypi.org/p/radius-clustering
@@ -110,6 +110,5 @@ jobs:
 
       - name: Publish Distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: ./dist/
+        #with:
           # To test: repository-url: https://test.pypi.org/legacy/
