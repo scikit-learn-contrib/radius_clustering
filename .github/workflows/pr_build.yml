@@ -13,7 +13,7 @@ jobs:
 
   build_test_wheels:
     name: Test build on Ubuntu
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
         fail-fast: false
         matrix:
@@ -44,7 +44,7 @@ jobs:
 
   build_test_sdist:
     name: Test source distribution
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
