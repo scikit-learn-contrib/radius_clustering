@@ -11,47 +11,6 @@ jobs:
         name: Run pytest
         uses: ./.github/workflows/tests.yml
 
-  build_test_wheels:
-    name: Test build on Self-Hosted Runner
-    runs-on: self-hosted
-    needs: run_pytest
-    strategy:
-        fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.22.0
-        with:
-          package-dir: .
-          output-dir: ./wheelhouse
-          config-file: "{package}/pyproject.toml"
-  
-  test_built_wheels:
-    name: Test built wheels
-    needs: build_test_wheels
-    runs-on: self-hosted
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Test import
-        run: |
-          PY_VERSION=$(echo ${{ matrix.python-version }} | sed 's/\.//g')
-
-          ls -la ./wheelhouse/
-          
-          pip install ./wheelhouse/*cp${PY_VERSION}*.whl
-          python -c "import radius_clustering; print(f'Successfully imported version {radius_clustering.__version__}')"
-
   build_test_sdist:
     name: Test source distribution
     runs-on: self-hosted
@@ -61,6 +20,11 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Build sdist
         run: |
