@@ -37,9 +37,9 @@ cdef extern from "mds_core.cpp":
         cpp_unordered_set[int] getSolutionSet()
         void setSolutionSet(cpp_unordered_set[int] solutionSet)
 
-    cdef Result iterated_greedy_wrapper(int numNodes, const vector[int]& edges_list, int nb_edges, string name) nogil
+    cdef Result iterated_greedy_wrapper(int numNodes, const vector[int]& edges_list, int nb_edges, long seed) nogil
 
-def solve_mds(int num_nodes, np.ndarray[int, ndim=1, mode="c"] edges not None, int nb_edges, str name):
+def solve_mds(int num_nodes, np.ndarray[int, ndim=1, mode="c"] edges not None, int nb_edges, int seed):
     """
     Solve the Minimum Dominating Set problem for a given graph.
 
@@ -64,15 +64,12 @@ def solve_mds(int num_nodes, np.ndarray[int, ndim=1, mode="c"] edges not None, i
     # Cast the NumPy array to a C++ vector
     cpp_edge_list.assign(&edges[0], &edges[0] + edges.shape[0])
     
-    cdef string instanceName = name.encode('utf-8')
-    
     cdef Result result
     with nogil:
-        result = iterated_greedy_wrapper(num_nodes, cpp_edge_list, nb_edges, instanceName)
+        result = iterated_greedy_wrapper(num_nodes, cpp_edge_list, nb_edges, seed)
 
     # Convert the C++ Result to a Python dictionary
     py_result = {
-        "instance_name": result.getInstanceName().decode('utf-8'),
         "solution_set": set(result.getSolutionSet()),
     }
     
