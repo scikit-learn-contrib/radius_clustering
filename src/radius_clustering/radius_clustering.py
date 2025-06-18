@@ -75,6 +75,10 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
     """
 
     _estimator_type = "clusterer"
+    _algorithms = {
+        "exact": clustering_exact,
+        "approx": clustering_approx,
+    }
 
     def __init__(
         self,
@@ -211,7 +215,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             np.uint32
         )  # Edges in the adjacency matrix
         # uint32 is used to use less memory. Max number of features is 2^32-1
-
+        self.clusterer_ = self._algorithms.get(self.manner, self._algorithms["approx"])
         self._clustering()
         self._compute_effective_radius()
         self._compute_labels()
@@ -253,16 +257,16 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         Perform the clustering using either the exact or approximate MDS method.
         """
         n = self.X_checked_.shape[0]
-        if self.manner != "exact" and self.manner != "approx":
-            raise ValueError("Invalid manner. Choose either 'exact' or 'approx'.")
-        if self.manner == "exact":
-            self.centers_, self.mds_exec_time_ = clustering_exact(n, self.edges_, self.nb_edges_)
-        else:
+        if self.manner not in self._algorithms:
+            raise ValueError(f"Invalid manner. Please choose in {list(self._algorithms.keys())}.")
+        if self.clusterer_ == clustering_approx:
             if self.random_state is None:
                 self.random_state = 42
             self.random_state_ = check_random_state(self.random_state)
             seed = self.random_state_.randint(np.iinfo(np.int32).max)
-            self.centers_, self.mds_exec_time_ = clustering_approx(n, self.edges_, self.nb_edges_, seed)
+        else:
+            seed = None
+        self.centers_, self.mds_exec_time_ = self.clusterer_(n, self.edges_, self.nb_edges_, seed)
 
     def _compute_effective_radius(self):
         """
@@ -282,3 +286,52 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
         min_dist = np.min(distances, axis=1)
         self.labels_[min_dist > self.radius] = -1
+
+    def set_solver(self, solver: callable) -> None:
+        """
+        Set a custom solver for resolving the MDS problem.
+        This method allows users to replace the default MDS solver with a custom one.
+
+        .. important::
+            The custom solver must accept the same parameters as the default solvers
+            and return a tuple containing the cluster centers and the execution time.
+            e.g., it should have the signature:
+            ```python
+            def custom_solver(
+                        n: int,
+                        edges: np.ndarray,
+                        nb_edges: int,
+                        random_state: int | None = None
+                    ) -> tuple[list, float]:
+                # Custom implementation details
+                centers = [...]
+                exec_time = ...
+                # Return the centers and execution time
+                return centers, exec_time
+            ```
+        
+        Parameters:
+        ----------
+        solver : callable
+            The custom solver function to use for MDS clustering.
+            It should accept the same parameters as the default solvers
+            and return a tuple containing the cluster centers and the execution time.
+
+        Raises:
+        -------
+        ValueError
+            If the provided solver does not have the correct signature.
+        """
+        if not callable(solver):
+            raise ValueError("The provided solver must be callable.")
+        
+        # Check if the solver has the correct signature
+        try:
+            n = 3
+            edges = np.array([[0, 1], [1, 2], [2, 0]])
+            nb_edges = edges.shape[0]
+            solver(n, edges, nb_edges, random_state=None)
+        except Exception as e:
+            raise ValueError(f"The provided solver does not have the correct signature: {e}") from e
+        self.manner = "custom"
+        self._algorithms["custom"] = solver

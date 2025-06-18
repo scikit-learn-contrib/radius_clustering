@@ -84,10 +84,10 @@ def test_radius_clustering_invalid_manner():
     """
     Test that an error is raised when an invalid manner is provided.
     """
-    with pytest.raises(ValueError, match="Invalid manner. Choose either 'exact' or 'approx'."):
+    with pytest.raises(ValueError):
         RadiusClustering(manner="invalid", radius=1.43).fit([[0, 1], [1, 0], [2, 1]])
 
-    with pytest.raises(ValueError, match="Invalid manner. Choose either 'exact' or 'approx'."):
+    with pytest.raises(ValueError):
         RadiusClustering(manner="", radius=1.43).fit([[0, 1], [1, 0], [2, 1]])
 
 
@@ -103,3 +103,59 @@ def test_radius_clustering_invalid_radius():
 
     with pytest.raises(ValueError, match="Radius must be a positive float."):
         RadiusClustering(manner="exact", radius="invalid").fit([[0, 1], [1, 0], [2, 1]])
+
+def test_radius_clustering_fit_without_data():
+    """
+    Test that an error is raised when fitting without data.
+    """
+    clustering = RadiusClustering(manner="exact", radius=1.5)
+    with pytest.raises(ValueError):
+        clustering.fit(None)
+
+def test_radius_clustering_new_clusterer():
+    """
+    Test that a custom clusterer can be set within the RadiusClustering class.
+    """
+    def custom_clusterer(n, edges, nb_edges, random_state=None):
+        # A mock custom clusterer that returns a fixed set of centers
+        # and a fixed execution time
+        return [0, 1], 0.1
+    clustering = RadiusClustering(manner="exact", radius=1.5)
+    # Set the custom clusterer
+    assert hasattr(clustering, 'set_solver'), "RadiusClustering should have a set_solver method."
+    assert callable(clustering.set_solver), "set_solver should be callable."
+    clustering.set_solver(custom_clusterer)
+    # Fit the clustering with the custom clusterer
+    X = np.array([[0, 1],
+                  [1, 0],
+                  [2, 1]])
+    clustering.fit(X)
+    assert clustering.clusterer_ == custom_clusterer, "The custom clusterer should be set correctly."
+    # Check that the labels are assigned correctly
+    assert len(clustering.labels_) == X.shape[0], "Labels length should match number of samples."
+    assert clustering.nb_edges_ > 0, "There should be edges in the graph."
+    assert clustering.centers_ == [0, 1], "The centers should match the custom clusterer's output."
+    assert clustering.mds_exec_time_ == 0.1, "The MDS execution time should match the custom clusterer's output."
+
+def test_invalid_clusterer():
+    """
+    Test that an error is raised when an invalid clusterer is set.
+    """
+    clustering = RadiusClustering(manner="exact", radius=1.5)
+    with pytest.raises(ValueError, match="The provided solver must be callable."):
+        clustering.set_solver("not_a_callable")
+
+    with pytest.raises(ValueError, match="The provided solver must be callable."):
+        clustering.set_solver(12345)  # Not a callable
+    with pytest.raises(ValueError, match="The provided solver must be callable."):
+        clustering.set_solver(None)
+
+    def invalid_signature():
+        return [0, 1], 0.1
+    
+    with pytest.raises(ValueError):
+        clustering.set_solver(invalid_signature)
+    def invalid_clusterer(n, edges, nb_edges):
+        return [0, 1], 0.1
+    with pytest.raises(ValueError):
+        clustering.set_solver(invalid_clusterer)

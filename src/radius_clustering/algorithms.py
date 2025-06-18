@@ -45,16 +45,28 @@ def clustering_approx(
         This ensures that the seed passed to the C++ code is always an integer,
         which is required by the MDS solver, and allows for
         reproducibility of the results.
+    
+    .. note::
+        This function uses the approximation method to solve the MDS problem.
+        See [casado]_ for more details.
 
     Parameters:
     -----------
     n : int
         The number of points in the dataset.
-
-    Notes:
-    ------
-    This function uses the approximation method to solve the MDS problem.
-    See [casado]_ for more details.
+    edges : np.ndarray
+        The edges of the graph, flattened into a 1D array.
+    nb_edges : int
+        The number of edges in the graph.
+    random_state : int | None
+        The random state to use for reproducibility.
+        If None, a default value of 42 is used.
+    Returns:
+    --------
+    centers : list
+        A sorted list of the centers of the clusters.
+    mds_exec_time : float
+        The execution time of the MDS algorithm in seconds.
     """
     result = solve_mds(
         n, edges.flatten().astype(np.int32), nb_edges, random_state
@@ -63,7 +75,7 @@ def clustering_approx(
     mds_exec_time = result["Time"]
     return centers, mds_exec_time
 
-def clustering_exact(n: int, edges: np.ndarray, nb_edges: int) -> None:
+def clustering_exact(n: int, edges: np.ndarray, nb_edges: int, seed: None = None) -> None:
     """
     Perform exact MDS clustering.
 
@@ -78,6 +90,20 @@ def clustering_exact(n: int, edges: np.ndarray, nb_edges: int) -> None:
     -----------
     n : int
         The number of points in the dataset.
+    edges : np.ndarray
+        The edges of the graph, flattened into a 1D array.
+    nb_edges : int
+        The number of edges in the graph.
+    seed : None
+        This parameter is not used in the exact method, but it is kept for
+        compatibility with the approximate method.
+
+    Returns:
+    --------
+    centers : list
+        A sorted list of the centers of the clusters.
+    mds_exec_time : float
+        The execution time of the MDS algorithm in seconds.
     """
     centers, mds_exec_time = py_emos_main(
         edges.flatten(), n, nb_edges
