@@ -1,7 +1,8 @@
 import platform
-from setuptools import setup, Extension
-from Cython.Build import cythonize
+
 import numpy as np
+from Cython.Build import cythonize
+from setuptools import Extension, setup
 
 SYSTEM = platform.system()
 CPU = platform.processor()
@@ -21,7 +22,10 @@ if (SYSTEM != "Darwin") and (CPU not in "arm64"):
 extensions = [
     Extension(
         "radius_clustering.utils._emos",
-        ["src/radius_clustering/utils/emos.pyx", "src/radius_clustering/utils/main-emos.c"],
+        [
+            "src/radius_clustering/utils/emos.pyx",
+            "src/radius_clustering/utils/main-emos.c"
+        ],
         include_dirs=[np.get_include(), "src/radius_clustering/utils"],
         extra_compile_args=C_COMPILE_ARGS,
     ),

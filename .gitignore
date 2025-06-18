@@ -3,7 +3,7 @@ docs/build/
 
 # env and caches
 
-mdsenv/
+mds-env/
 **/__pycache__/
 .pytest_cache/
 .ruff_cache/
@@ -24,6 +24,9 @@ docs/source/modules/generated/
 # cython files
 **/emos.c
 **/mds.cpp
+
+# MAC OS files
+.DS_Store
 
 # Reportings
 reporting/

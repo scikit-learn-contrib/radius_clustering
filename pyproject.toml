@@ -52,6 +52,7 @@ documentation = "https://lias-laboratory.github.io/radius_clustering/"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.3",
+    "pytest-cov>=5.0.0",
     "pandas",
     "cython>=3.0",
     "setuptools>= 61.0",
@@ -80,7 +81,21 @@ pythonpath = "src"
 testpaths = ["tests"]
 addopts = [
     "--import-mode=importlib",
+    "--cov=src/radius_clustering",
+    "--cov-report=term-missing",
+    "--cov-report=html:coverage_html_report",
 ]
+
+[tool.coverage.run]
+source = ["src/radius_clustering"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+title = "Coverage Report"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -105,14 +120,14 @@ exclude = [
 
 # Same as Black.
 line-length = 88
-indent-width = 4
+target-version = "py310"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
-select = ["E", "F"]
-ignore = []
+select = ["E", "F", "W", "I"]
+ignore = ["E203", "E731", "E741"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

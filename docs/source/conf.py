@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "Radius Clustering"
 copyright = "2024, Haenn Quentin, Chardin Brice, Baron Mickaël"
 author = "Haenn Quentin, Chardin Brice, Baron Mickaël"
-release = "1.0"
+release = "1.3.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

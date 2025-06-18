@@ -449,18 +449,18 @@ private:
 public:
     Main() : algorithm(constructive, localSearch) {}
 
-    Result execute(int numNodes, const std::vector<int>& edges_list, int nb_edges, std::string name) {
-        Instance instance(numNodes, edges_list, nb_edges, name);
-        RandomManager::setSeed(13);
+    Result execute(int numNodes, const std::vector<int>& edges_list, int nb_edges, long seed) {
+        Instance instance(numNodes, edges_list, nb_edges, "name");
+        RandomManager::setSeed(seed);
         signal(SIGINT, signal_handler);
         return algorithm.execute(instance);
     }
 };
 
 extern "C" {
-    inline Result iterated_greedy_wrapper(int numNodes, const std::vector<int>& edges_list, int nb_edges, std::string name) {
+    inline Result iterated_greedy_wrapper(int numNodes, const std::vector<int>& edges_list, int nb_edges, long seed) {
         static Main main;  // Create a single static instance
 
-        return main.execute(numNodes, edges_list, nb_edges, name);
+        return main.execute(numNodes, edges_list, nb_edges, seed);
     }
 }
