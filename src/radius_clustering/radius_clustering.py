@@ -9,10 +9,12 @@ This module serves as the main interface for the Radius clustering library.
 """
 
 import os
+import warnings
+
 import numpy as np
-from sklearn.metrics import pairwise_distances
 from sklearn.base import BaseEstimator, ClusterMixin
-from sklearn.utils.validation import check_array, validate_data, check_random_state
+from sklearn.metrics import pairwise_distances
+from sklearn.utils.validation import check_random_state, validate_data
 
 from radius_clustering.utils._emos import py_emos_main
 from radius_clustering.utils._mds_approx import solve_mds
@@ -21,7 +23,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 class RadiusClustering(ClusterMixin, BaseEstimator):
-    """
+    r"""
     Radius Clustering algorithm.
 
     This class implements clustering based on the Minimum Dominating Set (MDS) problem.
@@ -46,29 +48,52 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         The maximum distance between any point and its assigned cluster center.
     random_state\_ : int | None
         The random state used for reproducibility. If None, no random state is set.
-    
+
     .. note::
         The `random_state_` attribute is not used when the `manner` is set to "exact".
-    
+
     .. versionadded:: 1.3.0
-        The *random_state* parameter was added to allow reproducibility in the approximate method.
+        The *random_state* parameter was added to allow reproducibility in
+        the approximate method.
 
     .. versionchanged:: 1.3.0
-        All publicly accessible attributes are now suffixed with an underscore (e.g., `centers_`, `labels_`).
+        All publicly accessible attributes are now suffixed with an underscore
+        (e.g., `centers_`, `labels_`).
         This is particularly useful for compatibility with scikit-learn's API.
-    
-    .. versionchanged:: 1.3.0
-        The `threshold` parameter was renamed to `radius` to better reflect its purpose.
+
+    .. versionadded:: 1.3.0
+        The `radius` parameter replaces the `threshold` parameter for setting
+        the dissimilarity threshold for better clarity and consistency.
+
+    .. deprecated:: 1.3.0
+        The `threshold` parameter is deprecated. Use `radius` instead.
+        Will be removed in a future version.
     """
 
     _estimator_type = "clusterer"
 
-    def __init__(self, manner: str ="approx", radius: float =0.5, random_state: int | None = None) -> None:
+    def __init__(
+        self,
+        manner: str = "approx",
+        radius: float = 0.5,
+        threshold=None,
+        random_state: int | None = None,
+    ) -> None:
+        if threshold is not None:
+            warnings.warn(
+                "The 'threshold' parameter is deprecated and"
+                " will be removed in a future version."
+                "Please use 'radius' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            radius = threshold
+        self.threshold = threshold  # For backward compatibility
         self.manner = manner
         self.radius = radius
         self.random_state = random_state
 
-    def _check_symmetric(self, a: np.ndarray, tol: float =1e-8) -> bool:
+    def _check_symmetric(self, a: np.ndarray, tol: float = 1e-8) -> bool:
         if a.ndim != 2:
             raise ValueError("Input must be a 2D array.")
         if a.shape[0] != a.shape[1]:
@@ -80,21 +105,26 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         Fit the MDS clustering model to the input data.
 
         This method computes the distance matrix if the input is a feature matrix,
-        or uses the provided distance matrix directly if the input is already a distance matrix.
+        or uses the provided distance matrix directly if the input is already
+        a distance matrix.
 
         .. note::
             If the input is a distance matrix, it should be symmetric and square.
-            If the input is a feature matrix, the distance matrix will be computed using Euclidean distance.
-        
+            If the input is a feature matrix, the distance matrix
+            will be computed using Euclidean distance.
+
         .. tip::
-            Next version will support providing different metrics or even custom callables to compute the distance matrix.
+            Next version will support providing different metrics or
+            even custom callables to compute the distance matrix.
 
         Parameters:
         -----------
         X : array-like, shape (n_samples, n_features)
-            The input data to cluster. X should be a 2D array-like structure. It can either be :
+            The input data to cluster. X should be a 2D array-like structure.
+            It can either be :
             - A distance matrix (symmetric, square) with shape (n_samples, n_samples).
-            - A feature matrix with shape (n_samples, n_features) where the distance matrix will be computed.
+            - A feature matrix with shape (n_samples, n_features)
+            where the distance matrix will be computed.
         y : Ignored
             Not used, present here for API consistency by convention.
 
@@ -128,7 +158,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             dist_mat = pairwise_distances(self.X_checked_, metric="euclidean")
         else:
             dist_mat = self.X_checked_
-        
+
         if not isinstance(self.radius, (float, int)):
             raise ValueError("Radius must be a positive float.")
         if self.radius <= 0:
@@ -141,7 +171,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             self.effective_radius_ = 0
             self.mds_exec_time_ = 0
             return self
-        self.edges_ = np.argwhere(adj_mask).astype(np.uint32) # Edges in the adjacency matrix
+        self.edges_ = np.argwhere(adj_mask).astype(
+            np.uint32
+        )  # Edges in the adjacency matrix
         # uint32 is used to use less memory. Max number of features is 2^32-1
         self.dist_mat_ = dist_mat
 
@@ -160,9 +192,11 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         Parameters:
         -----------
         X : array-like, shape (n_samples, n_features)
-            The input data to cluster. X should be a 2D array-like structure. It can either be :
+            The input data to cluster. X should be a 2D array-like structure.
+            It can either be :
             - A distance matrix (symmetric, square) with shape (n_samples, n_samples).
-            - A feature matrix with shape (n_samples, n_features) where the distance matrix will be computed.
+            - A feature matrix with shape (n_samples, n_features) where
+            the distance matrix will be computed.
         y : Ignored
             Not used, present here for API consistency by convention.
 
@@ -181,9 +215,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         n = self.X_checked_.shape[0]
         if self.manner != "exact" and self.manner != "approx":
             print(f"Invalid manner: {self.manner}. Defaulting to 'approx'.")
-            raise ValueError(
-                "Invalid manner. Choose either 'exact' or 'approx'."
-            )
+            raise ValueError("Invalid manner. Choose either 'exact' or 'approx'.")
         if self.manner == "exact":
             self._clustering_exact(n)
         else:
@@ -210,20 +242,27 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
     def _clustering_approx(self, n: int) -> None:
         """
-        Perform approximate MDS clustering. This method uses a pretty trick to set the seed for the random state of the C++ code of the MDS solver.
+        Perform approximate MDS clustering.
+        This method uses a pretty trick to set the seed for
+        the random state of the C++ code of the MDS solver.
 
         .. tip::
-            The random state is used to ensure reproducibility of the results when using the approximate method.
+            The random state is used to ensure reproducibility of the results
+            when using the approximate method.
             If `random_state` is None, a default value of 42 is used.
-        
+
         .. important::
             :collapsible: closed
             The trick to set the random state is :
-            1. Use the `check_random_state` function to get a `RandomState`singleton instance, set up with the provided `random_state`.
-            2. Use the `randint` method of the `RandomState` instance to generate a random integer.
+            1. Use the `check_random_state` function to get a `RandomState`singleton
+            instance, set up with the provided `random_state`.
+            2. Use the `randint` method of the `RandomState` instance to generate a
+            random integer.
             3. Use this random integer as the seed for the C++ code of the MDS solver.
 
-            This ensures that the seed passed to the C++ code is always an integer, which is required by the MDS solver, and allows for reproducibility of the results.
+            This ensures that the seed passed to the C++ code is always an integer,
+            which is required by the MDS solver, and allows for
+            reproducibility of the results.
 
         Parameters:
         -----------
@@ -239,7 +278,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             self.random_state = 42
         self.random_state_ = check_random_state(self.random_state)
         seed = self.random_state_.randint(np.iinfo(np.int32).max)
-        result = solve_mds(n, self.edges_.flatten().astype(np.int32), self.nb_edges_, seed)
+        result = solve_mds(
+            n, self.edges_.flatten().astype(np.int32), self.nb_edges_, seed
+        )
         self.centers_ = sorted([x for x in result["solution_set"]])
         self.mds_exec_time_ = result["Time"]
 

@@ -120,14 +120,14 @@ exclude = [
 
 # Same as Black.
 line-length = 88
-indent-width = 4
+target-version = "py310"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
-select = ["E", "F"]
-ignore = []
+select = ["E", "F", "W", "I"]
+ignore = ["E203", "E731", "E741"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
