@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API Reference &#8212; Radius Clustering 1.0 documentation</title>
+    <title>API Reference &#8212; Radius Clustering 1.3.0 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -124,8 +124,8 @@
       
     
     
-    <img src="_static/logo-lias.jpg" class="logo__image only-light" alt="Radius Clustering 1.0 documentation - Home"/>
-    <img src="_static/logo-lias.jpg" class="logo__image only-dark pst-js-only" alt="Radius Clustering 1.0 documentation - Home"/>
+    <img src="_static/logo-lias.jpg" class="logo__image only-light" alt="Radius Clustering 1.3.0 documentation - Home"/>
+    <img src="_static/logo-lias.jpg" class="logo__image only-dark pst-js-only" alt="Radius Clustering 1.3.0 documentation - Home"/>
   
   
 </a></div>
@@ -427,8 +427,8 @@
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-radius_clustering" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">radius_clustering.</span></span><span class="sig-name descname"><span class="pre">RadiusClustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'approx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterMixin</span></code></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">radius_clustering.</span></span><span class="sig-name descname"><span class="pre">RadiusClustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'approx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code></p>
 <p>Radius Clustering algorithm.</p>
 <p>This class implements clustering based on the Minimum Dominating Set (MDS) problem.
 It can use either an exact or approximate method for solving the MDS problem.</p>
@@ -437,7 +437,7 @@ It can use either an exact or approximate method for solving the MDS problem.</p
 <dl class="simple">
 <dt>manner<span class="classifier">str, optional (default=”approx”)</span></dt><dd><p>The method to use for solving the MDS problem. Can be “exact” or “approx”.</p>
 </dd>
-<dt>threshold<span class="classifier">float, optional (default=0.5)</span></dt><dd><p>The dissimilarity threshold to act as radius constraint for the clustering.</p>
+<dt>radius<span class="classifier">float, optional (default=0.5)</span></dt><dd><p>The dissimilarity threshold to act as radius constraint for the clustering.</p>
 </dd>
 </dl>
 </section>
@@ -450,17 +450,58 @@ It can use either an exact or approximate method for solving the MDS problem.</p
 </dd>
 <dt>labels_<span class="classifier">array-like, shape (n_samples,)</span></dt><dd><p>The cluster labels for each point in the input data.</p>
 </dd>
-<dt>effective_radius<span class="classifier">float</span></dt><dd><p>The maximum distance between any point and its assigned cluster center.</p>
+<dt>effective_radius_<span class="classifier">float</span></dt><dd><p>The maximum distance between any point and its assigned cluster center.</p>
+</dd>
+<dt>random_state_<span class="classifier">int | None</span></dt><dd><p>The random state used for reproducibility. If None, no random state is set.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>random_state_</cite> attribute is not used when the <cite>manner</cite> is set to “exact”.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.0: </span>The <em>random_state</em> parameter was added to allow reproducibility in
+the approximate method.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.3.0: </span>All publicly accessible attributes are now suffixed with an underscore
+(e.g., <cite>centers_</cite>, <cite>labels_</cite>).
+This is particularly useful for compatibility with scikit-learn’s API.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.0: </span>The <cite>radius</cite> parameter replaces the <cite>threshold</cite> parameter for setting
+the dissimilarity threshold for better clarity and consistency.</p>
+</div>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.3.0: </span>The <cite>threshold</cite> parameter is deprecated. Use <cite>radius</cite> instead.
+Will be removed in a future version.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#radius_clustering.RadiusClustering" title="radius_clustering.radius_clustering.RadiusClustering"><span class="pre">RadiusClustering</span></a></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit" title="Link to this definition">#</a></dt>
 <dd><p>Fit the MDS clustering model to the input data.</p>
+<p>This method computes the distance matrix if the input is a feature matrix,
+or uses the provided distance matrix directly if the input is already
+a distance matrix.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the input is a distance matrix, it should be symmetric and square.
+If the input is a feature matrix, the distance matrix
+will be computed using Euclidean distance.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Next version will support providing different metrics or
+even custom callables to compute the distance matrix.</p>
+</div>
 <section id="id1">
 <h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <dl class="simple">
-<dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster.</p>
+<dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster. X should be a 2D array-like structure.
+It can either be :
+- A distance matrix (symmetric, square) with shape (n_samples, n_samples).
+- A feature matrix with shape (n_samples, n_features)
+where the distance matrix will be computed.</p>
 </dd>
 <dt>y<span class="classifier">Ignored</span></dt><dd><p>Not used, present here for API consistency by convention.</p>
 </dd>
@@ -495,12 +536,17 @@ see <a class="reference internal" href="auto_examples/plot_iris_example.html#sph
 
 <dl class="py method">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering.fit_predict">
-<span class="sig-name descname"><span class="pre">fit_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit_predict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit_predict" title="Link to this definition">#</a></dt>
 <dd><p>Fit the model and return the cluster labels.</p>
+<p>This method is a convenience function that combines <cite>fit</cite> and <cite>predict</cite>.</p>
 <section id="id2">
 <h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <dl class="simple">
-<dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster.</p>
+<dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster. X should be a 2D array-like structure.
+It can either be :
+- A distance matrix (symmetric, square) with shape (n_samples, n_samples).
+- A feature matrix with shape (n_samples, n_features) where
+the distance matrix will be computed.</p>
 </dd>
 <dt>y<span class="classifier">Ignored</span></dt><dd><p>Not used, present here for API consistency by convention.</p>
 </dd>

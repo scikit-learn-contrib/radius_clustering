@@ -149,7 +149,7 @@ We create an instance of the `RadiusClustering` class and fit it to the Iris dat
 
     import time
 
-    rad = RadiusClustering(manner="exact", threshold=1.43)
+    rad = RadiusClustering(manner="exact", radius=1.43)
     t0 = time.time()
     rad.fit(X)
     t_rad = time.time() - t0
@@ -366,7 +366,7 @@ We'll use a different dataset to show the difference plot.
 
     # Compute clustering with MDS
 
-    rad = RadiusClustering(manner="exact", threshold=232.09)
+    rad = RadiusClustering(manner="exact", radius=232.09)
     t0 = time.time()
     rad.fit(X)
     t_rad = time.time() - t0
@@ -525,7 +525,7 @@ The difference plot can be very useful to see where the two clustering algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.458 seconds)
+   **Total running time of the script:** (0 minutes 0.454 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_iris_example.py:

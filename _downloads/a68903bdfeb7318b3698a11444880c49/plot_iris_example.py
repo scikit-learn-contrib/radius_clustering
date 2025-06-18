@@ -82,7 +82,7 @@ plt.show()
 # We create an instance of the `RadiusClustering` class and fit it to the Iris dataset.
 import time
 
-rad = RadiusClustering(manner="exact", threshold=1.43)
+rad = RadiusClustering(manner="exact", radius=1.43)
 t0 = time.time()
 rad.fit(X)
 t_rad = time.time() - t0
@@ -242,7 +242,7 @@ wine_reduced = pca.fit_transform(X)
 
 # Compute clustering with MDS
 
-rad = RadiusClustering(manner="exact", threshold=232.09)
+rad = RadiusClustering(manner="exact", radius=232.09)
 t0 = time.time()
 rad.fit(X)
 t_rad = time.time() - t0
