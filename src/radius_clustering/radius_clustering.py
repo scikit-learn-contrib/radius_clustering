@@ -8,6 +8,8 @@ clustering tasks.
 This module serves as the main interface for the Radius clustering library.
 """
 
+from __future__ import annotations
+
 import os
 import warnings
 
