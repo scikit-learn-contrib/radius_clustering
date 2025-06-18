@@ -1,11 +1,11 @@
 from radius_clustering import RadiusClustering
 import pytest
+import numpy as np
 
 def test_symmetric():
     """
     Test that the RadiusClustering class can handle symmetric distance matrices.
     """
-    import numpy as np
 
     # Check 1D array input
 
@@ -35,12 +35,11 @@ def test_symmetric():
     assert not clustering._check_symmetric(X_non_square), "The matrix should not be symmetric."
 
 
-def test_fit():
+def test_fit_distance_matrix():
     """
-    Test that the RadiusClustering class can fit to a distance matrix and to a feature matrix.
+    Test that the RadiusClustering class can fit to a distance matrix.
     This test checks both the exact and approximate methods of clustering.
     """
-    import numpy as np
 
     # Create a symmetric distance matrix
     X = np.array([[0, 1, 2],
@@ -55,14 +54,27 @@ def test_fit():
     assert clustering.nb_edges_ > 0, "There should be edges in the graph."
     assert np.array_equal(clustering.X_checked_, clustering.dist_mat_), "X_checked_ should be equal to dist_mat_ because X is a distance matrix."
 
+@pytest.mark.parametrize(
+        "test_data", [
+            ("euclidean",1.5), 
+            ("manhattan", 2.1), 
+            ("cosine", 1.0)
+        ]
+)
+def test_fit_features(test_data):
+    """
+    Test that the RadiusClustering class can fit to feature data.
+    This test checks both the exact and approximate methods of clustering
+    and multiple metrics methods.
+    """
     # Create a feature matrix
     X_features = np.array([[0, 1],
                            [1, 0],
                            [2, 1]])
+    metric, radius = test_data
 
-    clustering = RadiusClustering(manner="approx", radius=1.5)
-    clustering.fit(X_features)
-
+    clustering = RadiusClustering(manner="approx", radius=radius)
+    clustering.fit(X_features, metric=metric)
     # Check that the labels are assigned correctly
     assert len(clustering.labels_) == X_features.shape[0], "Labels length should match number of samples."
     assert clustering.nb_edges_ > 0, "There should be edges in the graph."

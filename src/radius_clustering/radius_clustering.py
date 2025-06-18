@@ -102,7 +102,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             return False
         return np.allclose(a, a.T, atol=tol)
 
-    def fit(self, X: np.ndarray, y: None = None) -> "RadiusClustering":
+    def fit(self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean") -> "RadiusClustering":
         """
         Fit the MDS clustering model to the input data.
 
@@ -129,6 +129,35 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             where the distance matrix will be computed.
         y : Ignored
             Not used, present here for API consistency by convention.
+
+        metric : str | callable, optional (default="euclidean")
+            The metric to use when computing the distance matrix.
+            The default is "euclidean".
+            This should be a valid metric string from
+            `sklearn.metrics.pairwise_distances` or a callable that computes
+            the distance between two points.
+        
+        .. note::
+            The metric parameter *MUST* be a valid metric string from
+            `sklearn.metrics.pairwise_distances` or a callable that computes
+            the distance between two points.
+            Valid metric strings include :
+            - "euclidean"
+            - "manhattan"
+            - "cosine"
+            - "minkowski"
+            - and many more supported by scikit-learn.
+            please refer to the
+            `sklearn.metrics.pairwise_distances` documentation for a full list.
+        
+        .. attention::
+            If the input is a distance matrix, the metric parameter is ignored.
+            The distance matrix should be symmetric and square.
+        
+        .. warning::
+            If the parameter is a callable, it should :
+            - Accept two 1D arrays as input.
+            - Return a single float value representing the distance between the two points.
 
         Returns:
         --------
@@ -157,10 +186,13 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
         # Create dist and adj matrices
         if not self._check_symmetric(self.X_checked_):
-            dist_mat = pairwise_distances(self.X_checked_, metric="euclidean")
+            dist_mat = pairwise_distances(self.X_checked_, metric=metric)
         else:
             dist_mat = self.X_checked_
-
+        
+        if not self._check_symmetric(dist_mat):
+            raise ValueError("Input distance matrix must be symmetric. Got a non-symmetric matrix.")
+        self.dist_mat_ = dist_mat
         if not isinstance(self.radius, (float, int)):
             raise ValueError("Radius must be a positive float.")
         if self.radius <= 0:
@@ -177,7 +209,6 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             np.uint32
         )  # Edges in the adjacency matrix
         # uint32 is used to use less memory. Max number of features is 2^32-1
-        self.dist_mat_ = dist_mat
 
         self._clustering()
         self._compute_effective_radius()
@@ -185,7 +216,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
         return self
 
-    def fit_predict(self, X: np.ndarray, y: None = None) -> np.ndarray:
+    def fit_predict(self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean") -> np.ndarray:
         """
         Fit the model and return the cluster labels.
 
@@ -201,6 +232,11 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             the distance matrix will be computed.
         y : Ignored
             Not used, present here for API consistency by convention.
+        
+        metric : str | callable, optional (default="euclidean")
+            The metric to use when computing the distance matrix.
+            The default is "euclidean".
+            Refer to the `fit` method for more details on valid metrics.
 
         Returns:
         --------
