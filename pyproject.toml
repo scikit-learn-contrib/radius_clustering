@@ -52,6 +52,7 @@ documentation = "https://lias-laboratory.github.io/radius_clustering/"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.3",
+    "pytest-cov>=5.0.0",
     "pandas",
     "cython>=3.0",
     "setuptools>= 61.0",
@@ -80,7 +81,21 @@ pythonpath = "src"
 testpaths = ["tests"]
 addopts = [
     "--import-mode=importlib",
+    "--cov=src/radius_clustering",
+    "--cov-report=term-missing",
+    "--cov-report=html:coverage_html_report",
 ]
+
+[tool.coverage.run]
+source = ["src/radius_clustering"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
+title = "Coverage Report"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

@@ -31,7 +31,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
     -----------
     manner : str, optional (default="approx")
         The method to use for solving the MDS problem. Can be "exact" or "approx".
-    threshold : float, optional (default=0.5)
+    radius : float, optional (default=0.5)
         The dissimilarity threshold to act as radius constraint for the clustering.
 
     Attributes:
@@ -56,13 +56,16 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
     .. versionchanged:: 1.3.0
         All publicly accessible attributes are now suffixed with an underscore (e.g., `centers_`, `labels_`).
         This is particularly useful for compatibility with scikit-learn's API.
+    
+    .. versionchanged:: 1.3.0
+        The `threshold` parameter was renamed to `radius` to better reflect its purpose.
     """
 
     _estimator_type = "clusterer"
 
-    def __init__(self, manner: str ="approx", threshold: float =0.5, random_state: int | None = None) -> None:
+    def __init__(self, manner: str ="approx", radius: float =0.5, random_state: int | None = None) -> None:
         self.manner = manner
-        self.threshold = threshold
+        self.radius = radius
         self.random_state = random_state
 
     def _check_symmetric(self, a: np.ndarray, tol: float =1e-8) -> bool:
@@ -125,7 +128,12 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             dist_mat = pairwise_distances(self.X_checked_, metric="euclidean")
         else:
             dist_mat = self.X_checked_
-        adj_mask = np.triu((dist_mat <= self.threshold), k=1)
+        
+        if not isinstance(self.radius, (float, int)):
+            raise ValueError("Radius must be a positive float.")
+        if self.radius <= 0:
+            raise ValueError("Radius must be a positive float.")
+        adj_mask = np.triu((dist_mat <= self.radius), k=1)
         self.nb_edges_ = np.sum(adj_mask)
         if self.nb_edges_ == 0:
             self.centers_ = list(range(self.X_checked_.shape[0]))
@@ -171,6 +179,11 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         Perform the clustering using either the exact or approximate MDS method.
         """
         n = self.X_checked_.shape[0]
+        if self.manner != "exact" and self.manner != "approx":
+            print(f"Invalid manner: {self.manner}. Defaulting to 'approx'.")
+            raise ValueError(
+                "Invalid manner. Choose either 'exact' or 'approx'."
+            )
         if self.manner == "exact":
             self._clustering_exact(n)
         else:
@@ -193,6 +206,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         self.centers_, self.mds_exec_time_ = py_emos_main(
             self.edges_.flatten(), n, self.nb_edges_
         )
+        self.centers_.sort()  # Sort the centers to ensure consistent order
 
     def _clustering_approx(self, n: int) -> None:
         """
@@ -226,7 +240,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         self.random_state_ = check_random_state(self.random_state)
         seed = self.random_state_.randint(np.iinfo(np.int32).max)
         result = solve_mds(n, self.edges_.flatten().astype(np.int32), self.nb_edges_, seed)
-        self.centers_ = [x for x in result["solution_set"]]
+        self.centers_ = sorted([x for x in result["solution_set"]])
         self.mds_exec_time_ = result["Time"]
 
     def _compute_effective_radius(self):
@@ -246,4 +260,4 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         self.labels_ = np.argmin(distances, axis=1)
 
         min_dist = np.min(distances, axis=1)
-        self.labels_[min_dist > self.threshold] = -1
+        self.labels_[min_dist > self.radius] = -1

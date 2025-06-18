@@ -25,5 +25,8 @@ docs/source/modules/generated/
 **/emos.c
 **/mds.cpp
 
+# MAC OS files
+.DS_Store
+
 # Reportings
 reporting/
