@@ -18,8 +18,7 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.metrics import pairwise_distances
 from sklearn.utils.validation import check_random_state, validate_data
 
-from radius_clustering.utils._emos import py_emos_main
-from radius_clustering.utils._mds_approx import solve_mds
+from .algorithms import clustering_approx, clustering_exact
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -53,19 +52,22 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
     .. note::
         The `random_state_` attribute is not used when the `manner` is set to "exact".
+    
+    .. versionchanged:: 2.0.0
+        The `RadiusClustering` class has been refactored.
+        Clustering algorithms are now separated into their own module
+        (`algorithms.py`) to improve maintainability and extensibility.
 
     .. versionadded:: 1.3.0
-        The *random_state* parameter was added to allow reproducibility in
-        the approximate method.
+
+        - The *random_state* parameter was added to allow reproducibility in the approximate method.
+
+        - The `radius` parameter replaces the `threshold` parameter for setting the dissimilarity threshold for better clarity and consistency.
 
     .. versionchanged:: 1.3.0
         All publicly accessible attributes are now suffixed with an underscore
         (e.g., `centers_`, `labels_`).
         This is particularly useful for compatibility with scikit-learn's API.
-
-    .. versionadded:: 1.3.0
-        The `radius` parameter replaces the `threshold` parameter for setting
-        the dissimilarity threshold for better clarity and consistency.
 
     .. deprecated:: 1.3.0
         The `threshold` parameter is deprecated. Use `radius` instead.
@@ -243,7 +245,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         labels : array, shape (n_samples,)
             The cluster labels for each point in X.
         """
-        self.fit(X)
+        self.fit(X, metric=metric)
         return self.labels_
 
     def _clustering(self):
@@ -252,75 +254,15 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         """
         n = self.X_checked_.shape[0]
         if self.manner != "exact" and self.manner != "approx":
-            print(f"Invalid manner: {self.manner}. Defaulting to 'approx'.")
             raise ValueError("Invalid manner. Choose either 'exact' or 'approx'.")
         if self.manner == "exact":
-            self._clustering_exact(n)
+            self.centers_, self.mds_exec_time_ = clustering_exact(n, self.edges_, self.nb_edges_)
         else:
-            self._clustering_approx(n)
-
-    def _clustering_exact(self, n: int) -> None:
-        """
-        Perform exact MDS clustering.
-
-        Parameters:
-        -----------
-        n : int
-            The number of points in the dataset.
-
-        Notes:
-        ------
-        This function uses the EMOS algorithm to solve the MDS problem.
-        See: [jiang]_ for more details.
-        """
-        self.centers_, self.mds_exec_time_ = py_emos_main(
-            self.edges_.flatten(), n, self.nb_edges_
-        )
-        self.centers_.sort()  # Sort the centers to ensure consistent order
-
-    def _clustering_approx(self, n: int) -> None:
-        """
-        Perform approximate MDS clustering.
-        This method uses a pretty trick to set the seed for
-        the random state of the C++ code of the MDS solver.
-
-        .. tip::
-            The random state is used to ensure reproducibility of the results
-            when using the approximate method.
-            If `random_state` is None, a default value of 42 is used.
-
-        .. important::
-            :collapsible: closed
-            The trick to set the random state is :
-            1. Use the `check_random_state` function to get a `RandomState`singleton
-            instance, set up with the provided `random_state`.
-            2. Use the `randint` method of the `RandomState` instance to generate a
-            random integer.
-            3. Use this random integer as the seed for the C++ code of the MDS solver.
-
-            This ensures that the seed passed to the C++ code is always an integer,
-            which is required by the MDS solver, and allows for
-            reproducibility of the results.
-
-        Parameters:
-        -----------
-        n : int
-            The number of points in the dataset.
-
-        Notes:
-        ------
-        This function uses the approximation method to solve the MDS problem.
-        See [casado]_ for more details.
-        """
-        if self.random_state is None:
-            self.random_state = 42
-        self.random_state_ = check_random_state(self.random_state)
-        seed = self.random_state_.randint(np.iinfo(np.int32).max)
-        result = solve_mds(
-            n, self.edges_.flatten().astype(np.int32), self.nb_edges_, seed
-        )
-        self.centers_ = sorted([x for x in result["solution_set"]])
-        self.mds_exec_time_ = result["Time"]
+            if self.random_state is None:
+                self.random_state = 42
+            self.random_state_ = check_random_state(self.random_state)
+            seed = self.random_state_.randint(np.iinfo(np.int32).max)
+            self.centers_, self.mds_exec_time_ = clustering_approx(n, self.edges_, self.nb_edges_, seed)
 
     def _compute_effective_radius(self):
         """
