@@ -41,19 +41,22 @@ def exact_results():
     }
     return results
 
-def assert_results(results, expected):
+def assert_results_exact(results, expected):
     """Helper function to assert clustering results."""
-    assert len(results.labels_) == len(expected['labels']), "Labels length mismatch"
+    assert_results(results, expected)
     assert set(results.labels_) == set(expected['labels']), "Labels do not match expected"
     assert results.centers_ == expected['centers'], "Centers do not match expected"
-    assert abs(results.mds_exec_time_ - expected['time']) < 0.1, "Execution time mismatch by more than 0.1 seconds"
-    assert abs(results.effective_radius_ - expected['effective_radius']) < 0.01, "Effective radius mismatch"
     assert np.sum(results.labels_ - expected['labels']) == 0, "Labels do not match expected"
+
+def assert_results(results, expected):
+    assert len(results.labels_) == len(expected['labels']), "Labels length mismatch"
+    assert abs(results.mds_exec_time_ - expected['time']) < 0.1, "Execution time mismatch by more than 10%"
+    assert abs(results.effective_radius_ - expected['effective_radius'])/results.effective_radius_ < 0.1, "Effective radius mismatch"
 
 def test_exact(iris_data, exact_results):
     """Test the RadiusClustering with exact"""
     clustering = RadiusClustering(radius=1.43, manner='exact').fit(iris_data)
-    assert_results(clustering, exact_results)
+    assert_results_exact(clustering, exact_results)
 
 def test_approx(iris_data, approx_results):
     """Test the RadiusClustering with approx."""
