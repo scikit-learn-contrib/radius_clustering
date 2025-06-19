@@ -17,7 +17,7 @@ jobs:
 
   build_test_sdist:
     name: Test source distribution
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: run_pytest
     strategy:
       fail-fast: true
