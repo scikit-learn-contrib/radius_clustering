@@ -16,7 +16,7 @@ on:
 jobs:
   run_pytest:
     name: Run tests on min and max Python versions
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
@@ -61,7 +61,7 @@ jobs:
 
   build_sdist:
     name: Build source distribution
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: run_pytest
     steps:
       - uses: actions/checkout@v4
