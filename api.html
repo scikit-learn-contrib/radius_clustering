@@ -423,8 +423,11 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-radius_clustering">
-<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-radius_clustering" title="Link to this heading">#</a></h1>
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
+<p>This page documents the implementation details of the <cite>radius_clustering</cite> package.</p>
+<section id="radiusclustering-class">
+<h2>RadiusClustering Class<a class="headerlink" href="#radiusclustering-class" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">radius_clustering.</span></span><span class="sig-name descname"><span class="pre">RadiusClustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'approx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering" title="Link to this definition">#</a></dt>
@@ -433,7 +436,7 @@
 <p>This class implements clustering based on the Minimum Dominating Set (MDS) problem.
 It can use either an exact or approximate method for solving the MDS problem.</p>
 <section id="parameters">
-<h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>manner<span class="classifier">str, optional (default=”approx”)</span></dt><dd><p>The method to use for solving the MDS problem. Can be “exact” or “approx”.</p>
 </dd>
@@ -442,7 +445,7 @@ It can use either an exact or approximate method for solving the MDS problem.</p
 </dl>
 </section>
 <section id="attributes">
-<h2>Attributes:<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h2>
+<h3>Attributes:<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data.</p>
 </dd>
@@ -459,18 +462,27 @@ It can use either an exact or approximate method for solving the MDS problem.</p
 <p class="admonition-title">Note</p>
 <p>The <cite>random_state_</cite> attribute is not used when the <cite>manner</cite> is set to “exact”.</p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.4.0: </span>The <cite>RadiusClustering</cite> class has been refactored.
+Clustering algorithms are now separated into their own module
+(<cite>algorithms.py</cite>) to improve maintainability and extensibility.</p>
+</div>
 <div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.3.0: </span>The <em>random_state</em> parameter was added to allow reproducibility in
-the approximate method.</p>
+<p><span class="versionmodified added">Added in version 1.4.0: </span>The <cite>set_solver</cite> method was added to allow users to set a custom solver
+for the MDS problem. This allows for flexibility in how the MDS problem is solved
+and enables users to use their own implementations of MDS clustering algorithms.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.0: </span></p>
+<ul class="simple">
+<li><p>The <em>random_state</em> parameter was added to allow reproducibility in the approximate method.</p></li>
+<li><p>The <cite>radius</cite> parameter replaces the <cite>threshold</cite> parameter for setting the dissimilarity threshold for better clarity and consistency.</p></li>
+</ul>
 </div>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.3.0: </span>All publicly accessible attributes are now suffixed with an underscore
 (e.g., <cite>centers_</cite>, <cite>labels_</cite>).
 This is particularly useful for compatibility with scikit-learn’s API.</p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">Added in version 1.3.0: </span>The <cite>radius</cite> parameter replaces the <cite>threshold</cite> parameter for setting
-the dissimilarity threshold for better clarity and consistency.</p>
 </div>
 <div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 1.3.0: </span>The <cite>threshold</cite> parameter is deprecated. Use <cite>radius</cite> instead.
@@ -478,7 +490,7 @@ Will be removed in a future version.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#radius_clustering.RadiusClustering" title="radius_clustering.radius_clustering.RadiusClustering"><span class="pre">RadiusClustering</span></a></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#radius_clustering.RadiusClustering" title="radius_clustering.RadiusClustering"><span class="pre">RadiusClustering</span></a></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit" title="Link to this definition">#</a></dt>
 <dd><p>Fit the MDS clustering model to the input data.</p>
 <p>This method computes the distance matrix if the input is a feature matrix,
 or uses the provided distance matrix directly if the input is already
@@ -495,7 +507,7 @@ will be computed using Euclidean distance.</p>
 even custom callables to compute the distance matrix.</p>
 </div>
 <section id="id1">
-<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<h4>Parameters:<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
 <dl class="simple">
 <dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster. X should be a 2D array-like structure.
 It can either be :
@@ -505,17 +517,48 @@ where the distance matrix will be computed.</p>
 </dd>
 <dt>y<span class="classifier">Ignored</span></dt><dd><p>Not used, present here for API consistency by convention.</p>
 </dd>
+<dt>metric<span class="classifier">str | callable, optional (default=”euclidean”)</span></dt><dd><p>The metric to use when computing the distance matrix.
+The default is “euclidean”.
+This should be a valid metric string from
+<cite>sklearn.metrics.pairwise_distances</cite> or a callable that computes
+the distance between two points.</p>
+</dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The metric parameter <em>MUST</em> be a valid metric string from
+<cite>sklearn.metrics.pairwise_distances</cite> or a callable that computes
+the distance between two points.
+Valid metric strings include :
+- “euclidean”
+- “manhattan”
+- “cosine”
+- “minkowski”
+- and many more supported by scikit-learn.
+please refer to the
+<cite>sklearn.metrics.pairwise_distances</cite> documentation for a full list.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>If the input is a distance matrix, the metric parameter is ignored.
+The distance matrix should be symmetric and square.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the parameter is a callable, it should :
+- Accept two 1D arrays as input.
+- Return a single float value representing the distance between the two points.</p>
+</div>
 </section>
 <section id="returns">
-<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h3>
+<h4>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h4>
 <dl class="simple">
 <dt>self<span class="classifier">object</span></dt><dd><p>Returns self.</p>
 </dd>
 </dl>
 </section>
 <section id="examples">
-<h3>Examples :<a class="headerlink" href="#examples" title="Link to this heading">#</a></h3>
+<h4>Examples :<a class="headerlink" href="#examples" title="Link to this heading">#</a></h4>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">radius_clustering</span> <span class="kn">import</span> <span class="n">RadiusClustering</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load the Iris dataset</span>
@@ -536,11 +579,11 @@ see <a class="reference internal" href="auto_examples/plot_iris_example.html#sph
 
 <dl class="py method">
 <dt class="sig sig-object py" id="radius_clustering.RadiusClustering.fit_predict">
-<span class="sig-name descname"><span class="pre">fit_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit_predict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.fit_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.fit_predict" title="Link to this definition">#</a></dt>
 <dd><p>Fit the model and return the cluster labels.</p>
 <p>This method is a convenience function that combines <cite>fit</cite> and <cite>predict</cite>.</p>
 <section id="id2">
-<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<h4>Parameters:<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
 <dl class="simple">
 <dt>X<span class="classifier">array-like, shape (n_samples, n_features)</span></dt><dd><p>The input data to cluster. X should be a 2D array-like structure.
 It can either be :
@@ -550,12 +593,101 @@ the distance matrix will be computed.</p>
 </dd>
 <dt>y<span class="classifier">Ignored</span></dt><dd><p>Not used, present here for API consistency by convention.</p>
 </dd>
+<dt>metric<span class="classifier">str | callable, optional (default=”euclidean”)</span></dt><dd><p>The metric to use when computing the distance matrix.
+The default is “euclidean”.
+Refer to the <cite>fit</cite> method for more details on valid metrics.</p>
+</dd>
 </dl>
 </section>
 <section id="id3">
-<h3>Returns:<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<h4>Returns:<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
 <dl class="simple">
 <dt>labels<span class="classifier">array, shape (n_samples,)</span></dt><dd><p>The cluster labels for each point in X.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="radius_clustering.RadiusClustering.set_fit_request">
+<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#radius_clustering.RadiusClustering" title="radius_clustering.radius_clustering.RadiusClustering"><span class="pre">RadiusClustering</span></a></span></span><a class="headerlink" href="#radius_clustering.RadiusClustering.set_fit_request" title="Link to this definition">#</a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">fit</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">metric</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="radius_clustering.RadiusClustering.set_solver">
+<span class="sig-name descname"><span class="pre">set_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/radius_clustering/radius_clustering.html#RadiusClustering.set_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.RadiusClustering.set_solver" title="Link to this definition">#</a></dt>
+<dd><p>Set a custom solver for resolving the MDS problem.
+This method allows users to replace the default MDS solver with a custom one.</p>
+<p>An example is provided below and in the example gallery :
+<a class="reference internal" href="auto_examples/plot_benchmark_custom.html#sphx-glr-auto-examples-plot-benchmark-custom-py"><span class="std std-ref">Benchmark of Radius Clustering using multiple datasets and comparison with custom MDS</span></a></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The custom solver must accept the same parameters as the default solvers
+and return a tuple containing the cluster centers and the execution time.
+e.g., it should have the signature:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">custom_solver</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="n">edges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="n">nb_edges</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># Custom implementation details</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">centers</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">exec_time</span> <span class="o">=</span> <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># Return the centers and execution time</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="n">centers</span><span class="p">,</span> <span class="n">exec_time</span>
+</pre></div>
+</div>
+<p>This allows for flexibility in how the MDS problem is solved.</p>
+</div>
+<section id="id4">
+<h4>Parameters:<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
+<dl class="simple">
+<dt>solver<span class="classifier">callable</span></dt><dd><p>The custom solver function to use for MDS clustering.
+It should accept the same parameters as the default solvers
+and return a tuple containing the cluster centers and the execution time.</p>
+</dd>
+</dl>
+</section>
+<section id="raises">
+<h4>Raises:<a class="headerlink" href="#raises" title="Link to this heading">#</a></h4>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the provided solver does not have the correct signature.</p>
 </dd>
 </dl>
 </section>
@@ -564,6 +696,110 @@ the distance matrix will be computed.</p>
 </section>
 </dd></dl>
 
+</section>
+<section id="module-radius_clustering.algorithms">
+<span id="algorithms-module"></span><h2>Algorithms Module<a class="headerlink" href="#module-radius_clustering.algorithms" title="Link to this heading">#</a></h2>
+<p>This module contains the implementation of the clustering algorithms.
+It provides two main functions: <cite>clustering_approx</cite> and <cite>clustering_exact</cite>.</p>
+<p>These functions can be replaced in the <cite>RadiusClustering</cite> class
+to perform clustering using another algorithm.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.4.0: </span>Refactoring the structure of the code to separate the clustering algorithms
+This allows for easier maintenance and extensibility of the codebase.</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="radius_clustering.algorithms.clustering_approx">
+<span class="sig-prename descclassname"><span class="pre">radius_clustering.algorithms.</span></span><span class="sig-name descname"><span class="pre">clustering_approx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/radius_clustering/algorithms.html#clustering_approx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.algorithms.clustering_approx" title="Link to this definition">#</a></dt>
+<dd><p>Perform approximate MDS clustering.
+This method uses a pretty trick to set the seed for
+the random state of the C++ code of the MDS solver.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The random state is used to ensure reproducibility of the results
+when using the approximate method.
+If <cite>random_state</cite> is None, a default value of 42 is used.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The trick to set the random state is :</p>
+<p>1. Use the <cite>check_random_state</cite> function to get a <cite>RandomState`singleton
+instance, set up with the provided `random_state</cite>.</p>
+<p>2. Use the <cite>randint</cite> method of the <cite>RandomState</cite> instance to generate a
+random integer.</p>
+<ol class="arabic simple" start="3">
+<li><p>Use this random integer as the seed for the C++ code of the MDS solver.</p></li>
+</ol>
+<p>This ensures that the seed passed to the C++ code is always an integer,
+which is required by the MDS solver, and allows for
+reproducibility of the results.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function uses the approximation method to solve the MDS problem.
+See <a class="reference internal" href="index.html#casado" id="id5"><span>[casado]</span></a> for more details.</p>
+</div>
+<section id="id6">
+<h3>Parameters:<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>The number of points in the dataset.</p>
+</dd>
+<dt>edges<span class="classifier">np.ndarray</span></dt><dd><p>The edges of the graph, flattened into a 1D array.</p>
+</dd>
+<dt>nb_edges<span class="classifier">int</span></dt><dd><p>The number of edges in the graph.</p>
+</dd>
+<dt>random_state<span class="classifier">int | None</span></dt><dd><p>The random state to use for reproducibility.
+If None, a default value of 42 is used.</p>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h3>Returns:<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>centers<span class="classifier">list</span></dt><dd><p>A sorted list of the centers of the clusters.</p>
+</dd>
+<dt>mds_exec_time<span class="classifier">float</span></dt><dd><p>The execution time of the MDS algorithm in seconds.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="radius_clustering.algorithms.clustering_exact">
+<span class="sig-prename descclassname"><span class="pre">radius_clustering.algorithms.</span></span><span class="sig-name descname"><span class="pre">clustering_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/radius_clustering/algorithms.html#clustering_exact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#radius_clustering.algorithms.clustering_exact" title="Link to this definition">#</a></dt>
+<dd><p>Perform exact MDS clustering.</p>
+<p>This function uses the EMOs algorithm to solve the MDS problem.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The EMOS algorithm is an exact algorithm for solving the MDS problem.
+It is a branch and bound algorithm that uses graph theory tricks
+to efficiently cut the search space. See <a class="reference internal" href="index.html#jiang" id="id8"><span>[jiang]</span></a> for more details.</p>
+</div>
+<section id="id9">
+<h3>Parameters:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>The number of points in the dataset.</p>
+</dd>
+<dt>edges<span class="classifier">np.ndarray</span></dt><dd><p>The edges of the graph, flattened into a 1D array.</p>
+</dd>
+<dt>nb_edges<span class="classifier">int</span></dt><dd><p>The number of edges in the graph.</p>
+</dd>
+<dt>seed<span class="classifier">None</span></dt><dd><p>This parameter is not used in the exact method, but it is kept for
+compatibility with the approximate method.</p>
+</dd>
+</dl>
+</section>
+<section id="id10">
+<h3>Returns:<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>centers<span class="classifier">list</span></dt><dd><p>A sorted list of the centers of the clusters.</p>
+</dd>
+<dt>mds_exec_time<span class="classifier">float</span></dt><dd><p>The execution time of the MDS algorithm in seconds.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -617,9 +853,19 @@ the distance matrix will be computed.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering"><code class="docutils literal notranslate"><span class="pre">RadiusClustering</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.fit"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.fit()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.fit_predict"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.fit_predict()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#radiusclustering-class">RadiusClustering Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering"><code class="docutils literal notranslate"><span class="pre">RadiusClustering</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.fit"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.fit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.fit_predict"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.fit_predict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.set_fit_request"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.set_fit_request()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.RadiusClustering.set_solver"><code class="docutils literal notranslate"><span class="pre">RadiusClustering.set_solver()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-radius_clustering.algorithms">Algorithms Module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.algorithms.clustering_approx"><code class="docutils literal notranslate"><span class="pre">clustering_approx()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radius_clustering.algorithms.clustering_exact"><code class="docutils literal notranslate"><span class="pre">clustering_exact()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -442,8 +442,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_random_state</span><span class="p">,</span> <span class="n">validate_data</span>
 
-<span class="kn">from</span> <span class="nn">radius_clustering.utils._emos</span> <span class="kn">import</span> <span class="n">py_emos_main</span>
-<span class="kn">from</span> <span class="nn">radius_clustering.utils._mds_approx</span> <span class="kn">import</span> <span class="n">solve_mds</span>
+<span class="kn">from</span> <span class="nn">.algorithms</span> <span class="kn">import</span> <span class="n">clustering_approx</span><span class="p">,</span> <span class="n">clustering_exact</span>
 
 <span class="n">DIR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
@@ -479,19 +478,27 @@
 
 <span class="sd">    .. note::</span>
 <span class="sd">        The `random_state_` attribute is not used when the `manner` is set to &quot;exact&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    .. versionchanged:: 1.4.0</span>
+<span class="sd">        The `RadiusClustering` class has been refactored.</span>
+<span class="sd">        Clustering algorithms are now separated into their own module</span>
+<span class="sd">        (`algorithms.py`) to improve maintainability and extensibility.</span>
+<span class="sd">    </span>
+<span class="sd">    .. versionadded:: 1.4.0</span>
+<span class="sd">        The `set_solver` method was added to allow users to set a custom solver</span>
+<span class="sd">        for the MDS problem. This allows for flexibility in how the MDS problem is solved</span>
+<span class="sd">        and enables users to use their own implementations of MDS clustering algorithms.</span>
 
 <span class="sd">    .. versionadded:: 1.3.0</span>
-<span class="sd">        The *random_state* parameter was added to allow reproducibility in</span>
-<span class="sd">        the approximate method.</span>
+
+<span class="sd">        - The *random_state* parameter was added to allow reproducibility in the approximate method.</span>
+
+<span class="sd">        - The `radius` parameter replaces the `threshold` parameter for setting the dissimilarity threshold for better clarity and consistency.</span>
 
 <span class="sd">    .. versionchanged:: 1.3.0</span>
 <span class="sd">        All publicly accessible attributes are now suffixed with an underscore</span>
 <span class="sd">        (e.g., `centers_`, `labels_`).</span>
 <span class="sd">        This is particularly useful for compatibility with scikit-learn&#39;s API.</span>
-
-<span class="sd">    .. versionadded:: 1.3.0</span>
-<span class="sd">        The `radius` parameter replaces the `threshold` parameter for setting</span>
-<span class="sd">        the dissimilarity threshold for better clarity and consistency.</span>
 
 <span class="sd">    .. deprecated:: 1.3.0</span>
 <span class="sd">        The `threshold` parameter is deprecated. Use `radius` instead.</span>
@@ -499,6 +506,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_estimator_type</span> <span class="o">=</span> <span class="s2">&quot;clusterer&quot;</span>
+    <span class="n">_algorithms</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;exact&quot;</span><span class="p">:</span> <span class="n">clustering_exact</span><span class="p">,</span>
+        <span class="s2">&quot;approx&quot;</span><span class="p">:</span> <span class="n">clustering_approx</span><span class="p">,</span>
+    <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -530,7 +541,7 @@
 
 <div class="viewcode-block" id="RadiusClustering.fit">
 <a class="viewcode-back" href="../../api.html#radius_clustering.RadiusClustering.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RadiusClustering&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">callable</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RadiusClustering&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit the MDS clustering model to the input data.</span>
 
@@ -557,6 +568,35 @@
 <span class="sd">            where the distance matrix will be computed.</span>
 <span class="sd">        y : Ignored</span>
 <span class="sd">            Not used, present here for API consistency by convention.</span>
+
+<span class="sd">        metric : str | callable, optional (default=&quot;euclidean&quot;)</span>
+<span class="sd">            The metric to use when computing the distance matrix.</span>
+<span class="sd">            The default is &quot;euclidean&quot;.</span>
+<span class="sd">            This should be a valid metric string from</span>
+<span class="sd">            `sklearn.metrics.pairwise_distances` or a callable that computes</span>
+<span class="sd">            the distance between two points.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            The metric parameter *MUST* be a valid metric string from</span>
+<span class="sd">            `sklearn.metrics.pairwise_distances` or a callable that computes</span>
+<span class="sd">            the distance between two points.</span>
+<span class="sd">            Valid metric strings include :</span>
+<span class="sd">            - &quot;euclidean&quot;</span>
+<span class="sd">            - &quot;manhattan&quot;</span>
+<span class="sd">            - &quot;cosine&quot;</span>
+<span class="sd">            - &quot;minkowski&quot;</span>
+<span class="sd">            - and many more supported by scikit-learn.</span>
+<span class="sd">            please refer to the</span>
+<span class="sd">            `sklearn.metrics.pairwise_distances` documentation for a full list.</span>
+<span class="sd">        </span>
+<span class="sd">        .. attention::</span>
+<span class="sd">            If the input is a distance matrix, the metric parameter is ignored.</span>
+<span class="sd">            The distance matrix should be symmetric and square.</span>
+<span class="sd">        </span>
+<span class="sd">        .. warning::</span>
+<span class="sd">            If the parameter is a callable, it should :</span>
+<span class="sd">            - Accept two 1D arrays as input.</span>
+<span class="sd">            - Return a single float value representing the distance between the two points.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        --------</span>
@@ -585,10 +625,13 @@
 
         <span class="c1"># Create dist and adj matrices</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_symmetric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_checked_</span><span class="p">):</span>
-            <span class="n">dist_mat</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_checked_</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+            <span class="n">dist_mat</span> <span class="o">=</span> <span class="n">pairwise_distances</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_checked_</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dist_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_checked_</span>
-
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_symmetric</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input distance matrix must be symmetric. Got a non-symmetric matrix.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_mat_</span> <span class="o">=</span> <span class="n">dist_mat</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Radius must be a positive float.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -605,8 +648,7 @@
             <span class="n">np</span><span class="o">.</span><span class="n">uint32</span>
         <span class="p">)</span>  <span class="c1"># Edges in the adjacency matrix</span>
         <span class="c1"># uint32 is used to use less memory. Max number of features is 2^32-1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dist_mat_</span> <span class="o">=</span> <span class="n">dist_mat</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterer_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_algorithms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_algorithms</span><span class="p">[</span><span class="s2">&quot;approx&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clustering</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_effective_radius</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compute_labels</span><span class="p">()</span>
@@ -616,7 +658,7 @@
 
 <div class="viewcode-block" id="RadiusClustering.fit_predict">
 <a class="viewcode-back" href="../../api.html#radius_clustering.RadiusClustering.fit_predict">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">callable</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit the model and return the cluster labels.</span>
 
@@ -632,13 +674,18 @@
 <span class="sd">            the distance matrix will be computed.</span>
 <span class="sd">        y : Ignored</span>
 <span class="sd">            Not used, present here for API consistency by convention.</span>
+<span class="sd">        </span>
+<span class="sd">        metric : str | callable, optional (default=&quot;euclidean&quot;)</span>
+<span class="sd">            The metric to use when computing the distance matrix.</span>
+<span class="sd">            The default is &quot;euclidean&quot;.</span>
+<span class="sd">            Refer to the `fit` method for more details on valid metrics.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">        --------</span>
 <span class="sd">        labels : array, shape (n_samples,)</span>
 <span class="sd">            The cluster labels for each point in X.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span></div>
 
 
@@ -647,76 +694,16 @@
 <span class="sd">        Perform the clustering using either the exact or approximate MDS method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_checked_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manner</span> <span class="o">!=</span> <span class="s2">&quot;exact&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">manner</span> <span class="o">!=</span> <span class="s2">&quot;approx&quot;</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid manner: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">manner</span><span class="si">}</span><span class="s2">. Defaulting to &#39;approx&#39;.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid manner. Choose either &#39;exact&#39; or &#39;approx&#39;.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manner</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clustering_exact</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">manner</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_algorithms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid manner. Please choose in </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_algorithms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusterer_</span> <span class="o">==</span> <span class="n">clustering_approx</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random_state_</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="n">seed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state_</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clustering_approx</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_clustering_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform exact MDS clustering.</span>
-
-<span class="sd">        Parameters:</span>
-<span class="sd">        -----------</span>
-<span class="sd">        n : int</span>
-<span class="sd">            The number of points in the dataset.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">        ------</span>
-<span class="sd">        This function uses the EMOS algorithm to solve the MDS problem.</span>
-<span class="sd">        See: [jiang]_ for more details.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centers_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mds_exec_time_</span> <span class="o">=</span> <span class="n">py_emos_main</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">edges_</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_edges_</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centers_</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># Sort the centers to ensure consistent order</span>
-
-    <span class="k">def</span> <span class="nf">_clustering_approx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform approximate MDS clustering.</span>
-<span class="sd">        This method uses a pretty trick to set the seed for</span>
-<span class="sd">        the random state of the C++ code of the MDS solver.</span>
-
-<span class="sd">        .. tip::</span>
-<span class="sd">            The random state is used to ensure reproducibility of the results</span>
-<span class="sd">            when using the approximate method.</span>
-<span class="sd">            If `random_state` is None, a default value of 42 is used.</span>
-
-<span class="sd">        .. important::</span>
-<span class="sd">            :collapsible: closed</span>
-<span class="sd">            The trick to set the random state is :</span>
-<span class="sd">            1. Use the `check_random_state` function to get a `RandomState`singleton</span>
-<span class="sd">            instance, set up with the provided `random_state`.</span>
-<span class="sd">            2. Use the `randint` method of the `RandomState` instance to generate a</span>
-<span class="sd">            random integer.</span>
-<span class="sd">            3. Use this random integer as the seed for the C++ code of the MDS solver.</span>
-
-<span class="sd">            This ensures that the seed passed to the C++ code is always an integer,</span>
-<span class="sd">            which is required by the MDS solver, and allows for</span>
-<span class="sd">            reproducibility of the results.</span>
-
-<span class="sd">        Parameters:</span>
-<span class="sd">        -----------</span>
-<span class="sd">        n : int</span>
-<span class="sd">            The number of points in the dataset.</span>
-
-<span class="sd">        Notes:</span>
-<span class="sd">        ------</span>
-<span class="sd">        This function uses the approximation method to solve the MDS problem.</span>
-<span class="sd">        See [casado]_ for more details.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">random_state_</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
-        <span class="n">seed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_state_</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">solve_mds</span><span class="p">(</span>
-            <span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_edges_</span><span class="p">,</span> <span class="n">seed</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centers_</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;solution_set&quot;</span><span class="p">]])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mds_exec_time_</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span>
+            <span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centers_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mds_exec_time_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusterer_</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_edges_</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compute_effective_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -735,7 +722,64 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">min_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">min_dist</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">min_dist</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<div class="viewcode-block" id="RadiusClustering.set_solver">
+<a class="viewcode-back" href="../../api.html#radius_clustering.RadiusClustering.set_solver">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="nb">callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a custom solver for resolving the MDS problem.</span>
+<span class="sd">        This method allows users to replace the default MDS solver with a custom one.</span>
+
+<span class="sd">        An example is provided below and in the example gallery : </span>
+<span class="sd">        :ref:`sphx_glr_auto_examples_plot_benchmark_custom.py`</span>
+
+<span class="sd">        .. important::</span>
+<span class="sd">            The custom solver must accept the same parameters as the default solvers</span>
+<span class="sd">            and return a tuple containing the cluster centers and the execution time.</span>
+<span class="sd">            e.g., it should have the signature:</span>
+<span class="sd">            </span>
+<span class="sd">            &gt;&gt;&gt; def custom_solver(</span>
+<span class="sd">            &gt;&gt;&gt;             n: int,</span>
+<span class="sd">            &gt;&gt;&gt;             edges: np.ndarray,</span>
+<span class="sd">            &gt;&gt;&gt;             nb_edges: int,</span>
+<span class="sd">            &gt;&gt;&gt;             random_state: int | None = None</span>
+<span class="sd">            &gt;&gt;&gt;         ) -&gt; tuple[list, float]:</span>
+<span class="sd">            &gt;&gt;&gt;     # Custom implementation details</span>
+<span class="sd">            &gt;&gt;&gt;     centers = [...]</span>
+<span class="sd">            &gt;&gt;&gt;     exec_time = ...</span>
+<span class="sd">            &gt;&gt;&gt;     # Return the centers and execution time</span>
+<span class="sd">            &gt;&gt;&gt;     return centers, exec_time</span>
+<span class="sd">            </span>
+<span class="sd">            This allows for flexibility in how the MDS problem is solved.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        solver : callable</span>
+<span class="sd">            The custom solver function to use for MDS clustering.</span>
+<span class="sd">            It should accept the same parameters as the default solvers</span>
+<span class="sd">            and return a tuple containing the cluster centers and the execution time.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">        -------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the provided solver does not have the correct signature.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The provided solver must be callable.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Check if the solver has the correct signature</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+            <span class="n">nb_edges</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">solver</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">nb_edges</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The provided solver does not have the correct signature: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manner</span> <span class="o">=</span> <span class="s2">&quot;custom&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_algorithms</span><span class="p">[</span><span class="s2">&quot;custom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solver</span></div>
+</div>
 
 </pre></div>
 

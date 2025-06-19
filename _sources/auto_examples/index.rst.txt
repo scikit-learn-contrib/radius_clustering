@@ -16,6 +16,23 @@ This is the gallery of examples using the Radius Clustering package.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to implement a custom solver for the MDS problem and use it within the Radius Clustering framework. Plus, it compares the results of a naive implementation using the  NetworkX library with the Radius Clustering implementation.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_benchmark_custom_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_benchmark_custom.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Benchmark of Radius Clustering using multiple datasets and comparison with custom MDS</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example is meant to illustrate the use of the Radius clustering library on the Iris dataset. It comes with a simple example of how to use the library to cluster the Iris dataset and a comparison with kmeans clustering algorithms.">
 
 .. only:: html
@@ -41,6 +58,7 @@ This is the gallery of examples using the Radius Clustering package.
 .. toctree::
    :hidden:
 
+   /auto_examples/plot_benchmark_custom
    /auto_examples/plot_iris_example
 
 
