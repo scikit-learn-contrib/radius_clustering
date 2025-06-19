@@ -42,6 +42,7 @@ def clustering_approx(
 
         3. Use this random integer as the seed for the C++ code of the MDS solver.
 
+        
         This ensures that the seed passed to the C++ code is always an integer,
         which is required by the MDS solver, and allows for
         reproducibility of the results.

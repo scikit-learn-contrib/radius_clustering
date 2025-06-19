@@ -296,22 +296,23 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             The custom solver must accept the same parameters as the default solvers
             and return a tuple containing the cluster centers and the execution time.
             e.g., it should have the signature:
-            ```python
-            def custom_solver(
-                        n: int,
-                        edges: np.ndarray,
-                        nb_edges: int,
-                        random_state: int | None = None
-                    ) -> tuple[list, float]:
-                # Custom implementation details
-                centers = [...]
-                exec_time = ...
-                # Return the centers and execution time
-                return centers, exec_time
-            ```
-        
+            
+            >>> def custom_solver(
+            >>>             n: int,
+            >>>             edges: np.ndarray,
+            >>>             nb_edges: int,
+            >>>             random_state: int | None = None
+            >>>         ) -> tuple[list, float]:
+            >>>     # Custom implementation details
+            >>>     centers = [...]
+            >>>     exec_time = ...
+            >>>     # Return the centers and execution time
+            >>>     return centers, exec_time
+            
+            This allows for flexibility in how the MDS problem is solved.
+
         Parameters:
-        ----------
+        -----------
         solver : callable
             The custom solver function to use for MDS clustering.
             It should accept the same parameters as the default solvers
@@ -321,6 +322,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         -------
         ValueError
             If the provided solver does not have the correct signature.
+
         """
         if not callable(solver):
             raise ValueError("The provided solver must be callable.")
