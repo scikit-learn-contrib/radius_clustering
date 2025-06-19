@@ -8,6 +8,7 @@ on:
     paths:
       - "docs/**"
       - "src/radius_clustering/**"
+  workflow_dispatch:
 
 jobs:
   build:
