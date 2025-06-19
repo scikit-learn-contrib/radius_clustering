@@ -17,6 +17,17 @@ Radius clustering is a Python package that implements clustering under radius co
 - Compatible with scikit-learn's API for clustering algorithms
 - Supports radius-constrained clustering
 - Provides options for exact and approximate solutions
+- Easy to use and integrate with existing Python data science workflows
+- Includes comprehensive documentation and examples
+- Full test coverage to ensure reliability and correctness
+- Supports custom MDS solvers for flexibility in clustering approaches
+- Provides a user-friendly interface for clustering tasks
+
+> [!CAUTION]
+> **Deprecation Notice**: The `threshold` parameter in the `RadiusClustering` class has been deprecated. Please use the `radius` parameter instead for specifying the radius for clustering. It is planned to be completely removed in version 2.0.0. The `radius` parameter is now the standard way to define the radius for clustering, aligning with our objective of making the parameters' name more intuitive and user-friendly.
+
+> [!NOTE]
+> **NEW VERSIONS**: The package is currently under active development for new features and improvements, including some refactoring and enhancements to the existing codebase. Backwards compatibility is not guaranteed, so please check the [CHANGELOG](CHANGELOG.md) for details on changes and updates.
 
 ## Roadmap
 
@@ -45,7 +56,7 @@ from radius_clustering import RadiusClustering
 X = np.random.rand(100, 2)  # Generate random data
 
 # Create an instance of MdsClustering
-rad_clustering = RadiusClustering(manner="approx", threshold=0.5)
+rad_clustering = RadiusClustering(manner="approx", radius=0.5)
 
 # Fit the model to the data
 rad_clustering.fit(X)
@@ -116,5 +127,4 @@ The Radius Clustering work has been funded by:
 
 - [1] [An iterated greedy algorithm for finding the minimum dominating set in graphs](https://www.sciencedirect.com/science/article/pii/S0378475422005055)
 - [2] [An exact algorithm for the minimum dominating set problem](https://dl.acm.org/doi/abs/10.24963/ijcai.2023/622)
-
-
+- [3] [Clustering under radius constraint using minimum dominating set](https://link.springer.com/chapter/10.1007/978-3-031-62700-2_2)
