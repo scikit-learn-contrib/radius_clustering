@@ -20,11 +20,10 @@ Radius clustering is a Python package that implements clustering under radius co
 
 ## Roadmap
 
-- [ ] Version 2.0.0beta:
+- [x] Version 1.4.0:
     - [x] Add support for custom MDS solvers
-    - [ ] Improve documentation and examples
-    - [ ] Add iterative algorithm in both exact and approximate versions, which will allow to use the package in a more flexible way, especially when not knowing the radius beforehand.
-    - [ ] Add more examples and tutorials
+    - [x] Improve documentation and examples
+    - [x] Add more examples and tutorials
 
 ## Installation
 

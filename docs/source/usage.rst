@@ -82,6 +82,10 @@ Custom MDS Solver
 The two default solvers provided by the actual implementation of the `radius_clustering` package are focused on exactness (or proximity to exactness) of the results of a NP-hard problem. So, they may not be suitable for all use cases, especially when performance is a concern.
 If you have your own implementation of a Minimum Dominating Set (MDS) solver, you can use it with the `RadiusClustering` class ny using the :py:func:'RadiusClustering.set_solver' method. It will check that the solver is compatible with the expected input format and return type, and will use it to perform clustering.
 
+.. versionadded:: 1.4.0
+   The :py:func:`RadiusClustering.set_solver` method was added to allow users to set a custom MDS solver.
+   It is *NOT* backward compatible with previous versions of the package, as it comes with new structure and methods to handle custom solvers.
+
 Here's an example of how to implement a custom MDS solver and use it with the `RadiusClustering` class, using NetworkX implementation of the dominating set problem : 
 
 .. code-block:: python
@@ -122,6 +126,6 @@ Here's an example of how to implement a custom MDS solver and use it with the `R
 
 .. attention::
    We cannot guarantee that the custom MDS solver will produce the same results as the default solvers, especially if it is not purposely designed to solve the Minimum Dominating Set problem but rather just finds a dominating set. The results may vary depending on the implementation and the specific characteristics of the dataset.
-   As an example, a benchmark of our solutions and a custom one using NetworkX is available in the `Example Gallery` section of the documentation, which shows that the custom solver may produce different results than the default solvers, especially in terms of the number of clusters and the time taken to compute them.
+   As an example, a benchmark of our solutions and a custom one using NetworkX is available in the `Example Gallery` section of the documentation, which shows that the custom solver may produce different results than the default solvers, especially in terms of the number of clusters and the time taken to compute them (see :ref:`sphx_glr_auto_examples_plot_benchmark_custom.py`).
    However, it can be useful for specific use cases where performance is a concern or when you have a custom implementation that fits your needs better.
 

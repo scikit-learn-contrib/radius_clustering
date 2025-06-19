@@ -5,11 +5,10 @@ It provides two main functions: `clustering_approx` and `clustering_exact`.
 These functions can be replaced in the `RadiusClustering` class
 to perform clustering using another algorithm.
 
-.. versionadded:: 2.0.0
+.. versionadded:: 1.4.0
     Refactoring the structure of the code to separate the clustering algorithms
     This allows for easier maintenance and extensibility of the codebase.
-    Plus, this allows for the addition of new clustering algorithms
-    such as `Curgraph` added in this version.
+
 """
 from __future__ import annotations
 

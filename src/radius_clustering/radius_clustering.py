@@ -53,10 +53,15 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
     .. note::
         The `random_state_` attribute is not used when the `manner` is set to "exact".
     
-    .. versionchanged:: 2.0.0
+    .. versionchanged:: 1.4.0
         The `RadiusClustering` class has been refactored.
         Clustering algorithms are now separated into their own module
         (`algorithms.py`) to improve maintainability and extensibility.
+    
+    .. versionadded:: 1.4.0
+        The `set_solver` method was added to allow users to set a custom solver
+        for the MDS problem. This allows for flexibility in how the MDS problem is solved
+        and enables users to use their own implementations of MDS clustering algorithms.
 
     .. versionadded:: 1.3.0
 
@@ -291,6 +296,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         """
         Set a custom solver for resolving the MDS problem.
         This method allows users to replace the default MDS solver with a custom one.
+
+        An example is provided below and in the example gallery : 
+        :ref:`sphx_glr_auto_examples_plot_benchmark_custom.py`
 
         .. important::
             The custom solver must accept the same parameters as the default solvers
