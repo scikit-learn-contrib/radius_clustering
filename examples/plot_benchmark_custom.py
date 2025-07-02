@@ -184,15 +184,6 @@ fig, axs = plt.subplot_mosaic(
 fig.suptitle("Benchmark of Radius Clustering Solvers", fontsize=16)
 
 axs['time'].set_yscale('log')  # Use logarithmic scale for better visibility
-#for algo, algo_results in results.items():
-    # Plot execution time
-#    axs['time'].plot(
-#        DATASETS.keys(),
-#        algo_results["time"],
-#        marker='o',
-#        label=algo,
-#    )
-    # Plot number of clusters
 
 algorithms = list(results.keys())
 dataset_names = list(DATASETS.keys())
@@ -205,7 +196,6 @@ for i, algo in enumerate(algorithms):
     # Calculate position for each bar in the group to center them
     position = x_indices - (n_algos * bar_width / 2) + (i * bar_width) + bar_width / 2
     axs['time'].bar(position, times, bar_width, label=algo)
-# --- End of change ---
 
 for i, (name, (dataset, _)) in enumerate(DATASETS.items()):
     axs[name].bar(
@@ -227,7 +217,7 @@ axs["glass"].set_ylabel("Number of clusters")
 axs['time'].set_title("Execution Time (log scale)")
 axs['time'].set_xlabel("Datasets")
 axs['time'].set_ylabel("Time (seconds)")
-axs['time'].set_xticks(x_indices)  # Set tick positions to be at the center of the groups
+axs['time'].set_xticks(x_indices)
 axs['time'].set_xticklabels(dataset_names)
 axs['time'].legend(title="Algorithms")
 plt.tight_layout()
