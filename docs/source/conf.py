@@ -25,7 +25,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
-    "sphinx-prompt",
+    "sphinx_prompt",
     "sphinx.ext.napoleon",
     "sphinxcontrib.sass",
     "sphinx_remove_toctrees",
