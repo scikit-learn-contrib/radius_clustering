@@ -612,15 +612,18 @@ The procedure is as follows:
 <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Benchmark of Radius Clustering Solvers&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
 <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>  <span class="c1"># Use logarithmic scale for better visibility</span>
-<span class="k">for</span> <span class="n">algo</span><span class="p">,</span> <span class="n">algo_results</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="c1"># Plot execution time</span>
-    <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="n">DATASETS</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
-        <span class="n">algo_results</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
-        <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="n">algo</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># Plot number of clusters</span>
+
+<span class="n">algorithms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">dataset_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">DATASETS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">n_algos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">algorithms</span><span class="p">)</span>
+<span class="n">x_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset_names</span><span class="p">))</span>  <span class="c1"># the label locations</span>
+<span class="n">bar_width</span> <span class="o">=</span> <span class="mf">0.8</span> <span class="o">/</span> <span class="n">n_algos</span>  <span class="c1"># the width of the bars, with some padding</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">algo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">algorithms</span><span class="p">):</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">algo</span><span class="p">][</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+    <span class="c1"># Calculate position for each bar in the group to center them</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">x_indices</span> <span class="o">-</span> <span class="p">(</span><span class="n">n_algos</span> <span class="o">*</span> <span class="n">bar_width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">bar_width</span><span class="p">)</span> <span class="o">+</span> <span class="n">bar_width</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">bar_width</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">algo</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">_</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">DATASETS</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
     <span class="n">axs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
@@ -635,7 +638,6 @@ The procedure is as follows:
         <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">axs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Algorithms&quot;</span><span class="p">)</span>
 
 <span class="n">axs</span><span class="p">[</span><span class="s2">&quot;iris&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Number of clusters&quot;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="s2">&quot;glass&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Number of clusters&quot;</span><span class="p">)</span>
@@ -643,12 +645,14 @@ The procedure is as follows:
 <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Execution Time (log scale)&quot;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Datasets&quot;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Time (seconds)&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x_indices</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">dataset_names</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Algorithms&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_benchmark_custom_001.png" srcset="../_images/sphx_glr_plot_benchmark_custom_001.png" alt="Benchmark of Radius Clustering Solvers, Execution Time (log scale), iris, wine, breast_cancer, vehicle, glass, ionosphere, synthetic, yeast" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/radius_clustering/radius_clustering/examples/plot_benchmark_custom.py:219: UserWarning: The figure layout has changed to tight
+<img src="../_images/sphx_glr_plot_benchmark_custom_001.png" srcset="../_images/sphx_glr_plot_benchmark_custom_001.png" alt="Benchmark of Radius Clustering Solvers, Execution Time (log scale), iris, wine, breast_cancer, vehicle, glass, ionosphere, synthetic, yeast" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/radius_clustering/radius_clustering/examples/plot_benchmark_custom.py:223: UserWarning: The figure layout has changed to tight
   plt.tight_layout()
 </pre></div>
 </div>
@@ -659,7 +663,7 @@ The procedure is as follows:
 We visualized the clustering results and the difference between the two clustering algorithms.
 We saw that Radius Clustering can lead to smaller clusters than kmeans, which produces much more equilibrate clusters.
 The difference plot can be very useful to see where the two clustering algorithms differ.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (13 minutes 0.891 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (13 minutes 0.295 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-custom-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/40d009986931086fe7524a6c6c645a2b/plot_benchmark_custom.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark_custom.ipynb</span></code></a></p>
