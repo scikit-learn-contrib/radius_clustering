@@ -4,6 +4,7 @@
 <a href="https://docs.astral.sh/ruff/"><img alt="Code style: Ruff" src="https://img.shields.io/badge/style-ruff-41B5BE?style=flat"></a>
 <a href="https://lias-laboratory.github.io/radius_clustering/"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/lias-laboratory/radius_clustering/sphinx.yml?label=Doc%20Building"></a>
 <a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
+<a href="https://codecov.io/gh/scikit-learn-contrib/radius_clustering"><img alt="Codecov" src="https://codecov.io/gh/scikit-learn-contrib/radius_clustering/branch/master/graph/badge.svg"></a>
 
 </p>
 

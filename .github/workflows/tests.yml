@@ -28,3 +28,9 @@ jobs:
       - name: Run tests with pytest
         run: |
           pytest -v
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5.4.3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: scikit-learn-contrib/radius_clustering
