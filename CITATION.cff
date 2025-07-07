@@ -31,4 +31,6 @@ authors:
 identifiers:
   - type: swh
     value: 'swh:1:rev:66f8d295cc5fbc80f356d11be46571bfbb190609'
+  - type: doi
+    value: '10.5281/zenodo.15830087'
 license: GPL-3.0
