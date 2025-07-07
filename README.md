@@ -5,6 +5,8 @@
 <a href="https://lias-laboratory.github.io/radius_clustering/"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/lias-laboratory/radius_clustering/sphinx.yml?label=Doc%20Building"></a>
 <a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
 <a href="https://codecov.io/gh/scikit-learn-contrib/radius_clustering"><img alt="Codecov" src="https://codecov.io/gh/scikit-learn-contrib/radius_clustering/branch/master/graph/badge.svg"></a>
+<a href="https://mybinder.org/v2/gh/scikit-learn-contrib/radius_clustering/HEAD?urlpath=%2Fdoc%2Ftree%2Fnotebooks.ipynb"><img alt="Binder" src="https://mybinder.org/badge_logo.svg"></a>
+
 
 </p>
 
