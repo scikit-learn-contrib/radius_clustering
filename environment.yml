@@ -1,0 +1,7 @@
+name: radius_clustering
+dependencies:
+    - matplotlib>=3.6.2
+    - numpy>=2.0
+    - scikit-learn>=1.2.2
+    - scipy>=1.12.0
+    - pandas>=2.0.3
