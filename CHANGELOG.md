@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2025-07-07
+
+### Contributors
+
+- [@quentinhaenn](Quentin Haenn) - Main developer and maintainer
+
+### Changed
+
+- Project governance changed : now the project is part of scikit-learn-contrib organization.
+- Updated the README to reflect the new governance and organization.
+- Updated the documentation to reflect the new governance and organization.
+- Updated the test cases to ensure compatibility with the new governance and organization.
+- Enhanced repository standards with codecov, binder examples and zenodo integration.
+- New issue and PR templates
+- Code of conduct and contributing guidelines added
+
 ## [1.4.0] - 2025-06-19
 
 ### Contributors
