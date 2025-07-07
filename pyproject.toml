@@ -34,8 +34,6 @@ classifiers=[
   "Programming Language :: Python",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
-  "Topic :: Scientific/Engineering :: Machine Learning",
-  "Topic :: Scientific/Engineering :: Mathematics",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
   "Operating System :: Unix",
