@@ -11,10 +11,13 @@ authors = [
     {name = "Quentin Haenn"},
     {name = "Lias Laboratory"}
 ]
+maintainers = [
+    {name = "Quentin Haenn", email = "quentin.haenn.pro@gmail.com"}
+    ]
 
 dependencies = [
     "matplotlib>=3.6.2",
-    "numpy>=1.23",
+    "numpy>=2.0",
     "scikit-learn>=1.2.2",
     "scipy>=1.12.0",
 ]
@@ -22,6 +25,7 @@ dependencies = [
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
 classifiers=[
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -30,6 +34,8 @@ classifiers=[
   "Programming Language :: Python",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Machine Learning",
+  "Topic :: Scientific/Engineering :: Mathematics",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
   "Operating System :: Unix",
@@ -42,15 +48,16 @@ classifiers=[
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-keywords = ["Unsupervised learning","clustering", "minimum dominating sets","clustering under radius constraint"]
+keywords = ["Unsupervised learning", "clustering", "minimum dominating sets","clustering under radius constraint"]
 
 [project.urls]
-source = "https://github.com/lias-laboratory/radius_clustering"
-tracker = "https://github.com/lias-laboratory/radius_clustering/issues"
-documentation = "https://lias-laboratory.github.io/radius_clustering/"
+source = "https://github.com/scikit-learn-contrib/radius_clustering"
+tracker = "https://github.com/scikit-learn-contrib/radius_clustering/issues"
+documentation = "https://contrib.scikit-learn.org/radius_clustering/"
 
 [project.optional-dependencies]
 dev = [
+    "pre-commit>=3.8.0",
     "pytest>=8.3.3",
     "pytest-cov>=5.0.0",
     "pandas",
