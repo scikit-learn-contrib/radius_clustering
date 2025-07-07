@@ -6,7 +6,7 @@
 <a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
 <a href="https://codecov.io/gh/scikit-learn-contrib/radius_clustering"><img alt="Codecov" src="https://codecov.io/gh/scikit-learn-contrib/radius_clustering/branch/master/graph/badge.svg"></a>
 <a href="https://mybinder.org/v2/gh/scikit-learn-contrib/radius_clustering/HEAD?urlpath=%2Fdoc%2Ftree%2Fnotebooks%2Fcomparison_example.ipynb"><img alt="Binder" src="https://mybinder.org/badge_logo.svg"></a>
-
+<a href="https://doi.org/10.5281/zenodo.15830087"><img src="https://zenodo.org/badge/887316842.svg" alt="DOI"></a>
 
 </p>
 
