@@ -5,7 +5,7 @@
 <a href="https://lias-laboratory.github.io/radius_clustering/"><img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/lias-laboratory/radius_clustering/sphinx.yml?label=Doc%20Building"></a>
 <a><img alt="Python version supported" src="https://img.shields.io/pypi/pyversions/radius-clustering"></a>
 <a href="https://codecov.io/gh/scikit-learn-contrib/radius_clustering"><img alt="Codecov" src="https://codecov.io/gh/scikit-learn-contrib/radius_clustering/branch/master/graph/badge.svg"></a>
-<a href="https://mybinder.org/v2/gh/scikit-learn-contrib/radius_clustering/HEAD?urlpath=%2Fdoc%2Ftree%2Fnotebooks.ipynb"><img alt="Binder" src="https://mybinder.org/badge_logo.svg"></a>
+<a href="https://mybinder.org/v2/gh/scikit-learn-contrib/radius_clustering/HEAD?urlpath=%2Fdoc%2Ftree%2Fnotebooks%2Fcomparison_example.ipynb"><img alt="Binder" src="https://mybinder.org/badge_logo.svg"></a>
 
 
 </p>
@@ -105,6 +105,26 @@ Please note that the project is released with a [Code of Conduct](CODE_OF_CONDUC
 
 This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
 
+## How to cite this work
+
+If you use Radius Clustering in your research, please cite the following paper and the software itself:
+
+```bibtex
+@inproceedings{haenn_clustering2024,
+  TITLE = {{Clustering Under Radius Constraints Using Minimum Dominating Sets}},
+  AUTHOR = {Haenn, Quentin and Chardin, Brice and Baron, Micka{\"e}l},
+  URL = {https://hal.science/hal-04533921},
+  BOOKTITLE = {{Lecture Notes in Artificial Intelligence}},
+  ADDRESS = {Poitiers, France},
+  PUBLISHER = {{Springer}},
+  YEAR = {2024},
+  MONTH = Jun,
+  KEYWORDS = {Constrained Clustering ; Radius Based Clustering ; Minimum Dominating Set ; Constrained Clustering Radius Based Clustering Minimum Dominating Set},
+  PDF = {https://hal.science/hal-04533921v1/file/clustering_under_radius_using_mds.pdf},
+  HAL_ID = {hal-04533921},
+  HAL_VERSION = {v1},
+}
+```
 
 ## Acknowledgments
 
