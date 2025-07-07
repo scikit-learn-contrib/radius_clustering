@@ -93,7 +93,10 @@ If you want to know more about the experiments conducted with the package, pleas
 
 ## Contributing
 
-Contributions to Radius Clustering are welcome! Please feel free to submit a Pull Request.
+Contributions to Radius Clustering are welcome!
+
+Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for details on how to contribute to the project.
+Please note that the project is released with a [Code of Conduct](CODE_OF_CONDUCT.md), and we expect all contributors to adhere to it.
 
 ## License
 
