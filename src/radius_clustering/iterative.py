@@ -77,7 +77,7 @@ def gen_even_slices(n, n_packs, n_samples=None):
             start = end
 
 
-class Curgraph(object):
+class Curgraph(MetaEstimatorMixin, BaseEstimator):
     """
     CURGRAPH algorithm for clustering based on Minimum Dominating Set (MDS).
 
@@ -116,13 +116,16 @@ class Curgraph(object):
         self,
         manner: str = "approx",
         max_clusters: int = None,
-        radius: Union[int, float] = None,
+        radius: Union[int, float, None] = None,
+        random_state: Union[int, np.random.RandomState, None] = None,
+        n_jobs: int = -1,
     ):
         self.manner = manner
         self.max_clusters = max_clusters
+        self.solver = RadiusClustering(manner=self.manner, random_state=random_state)
         self.radius = radius
-        self.results_ = {}
-        self.solver = RadiusClustering(manner=self.manner)
+        self.random_state = random_state
+        self.n_jobs = n_jobs
 
     def _init_dist_list(self, X: np.ndarray) -> None:
         """
@@ -139,18 +142,12 @@ class Curgraph(object):
         arg_radius = np.where(self._list_t <= radius)[0]
         self._list_t = self._list_t[arg_radius:]
 
-    def _init_results(self):
-        if self.max_clusters is not None:
-            for i in range(2, self.max_clusters + 1):
-                self.results_[i] = {"radius": None, "centers": None}
-
-    def fit(self, X: ArrayLike, y: None, n_jobs: int = -1) -> self:
+    def fit(self, X: np.ndarray, y=None) -> "Curgraph":
         """
         Run the CURGRAPH algorithm.
         """
-        self._init_results()
         self._init_dist_list(X)
-        self.n_jobs_ = effective_n_jobs(n_jobs)
+        self.n_jobs = effective_n_jobs(self.n_jobs)
         dissimilarity_index = 0
         first_t = self._list_t[0]
         old_mds = self.solver.set_params(radius=first_t).fit(X).centers_
@@ -158,66 +155,122 @@ class Curgraph(object):
             self.max_clusters + 1 if self.max_clusters else len(old_mds) + 1
         )
         tasks = [
-            delayed(self._curgraph)(
-                dissimilarity_index, self._list_t[s], old_mds, cardinality_limit
+            delayed(Curgraph._curgraph)(
+                dissimilarity_index,
+                self._list_t[s],
+                old_mds,
+                cardinality_limit,
+                self.dist_mat_,
+                self.solver,
             )
-            for s in gen_even_slices(len(self._list_t), self.n_jobs_)
+            for s in gen_even_slices(len(self._list_t), self.n_jobs)
         ]
-        with parallel_backend("threading", n_jobs=self.n_jobs_):
-            Parallel()(tasks)
+        with parallel_backend("threading", n_jobs=self.n_jobs):
+            result_list = Parallel()(tasks)
 
+        self.results_ = {}
+        for local_results in result_list:
+            for card, result in local_results.items():
+                if card not in self.results_:
+                    self.results_[card] = result
+                else:
+                    if result["radius"] < self.results_[card]["radius"]:
+                        self.results_[card] = result
+        self.labels_ = None
         return self
 
+    def predict(self, n_clusters: int) -> np.ndarray:
+        check_is_fitted(self)
+        solution = self.results_.get(n_clusters)
+        if solution is None:
+            available = sorted(self.results_.keys())
+            raise ValueError(
+                f"No solution found for {n_clusters} clusters. "
+                f"Available solutions are for k={available}."
+            )
+        centers = solution["centers"]
+        distance_to_centers = self.dist_mat_[:, centers]
+        return np.argmin(distance_to_centers, axis=1)
+
+    @property
+    def available_clusters(self) -> list[int]:
+        check_is_fitted(self)
+        return sorted(self.results_.keys())
+
+    @staticmethod
     def _curgraph(
-        self,
         index_d: int,
         list_t: List[float],
         old_mds: np.ndarray,
         cardinality_limit: int,
-    ) -> None:
+        dist_mat: np.ndarray,
+        solver: RadiusClustering,
+    ) -> Dict[int, Dict[str, Any]]:
+        local_results = {}
         while (len(old_mds) < cardinality_limit) and (index_d < len(list_t)):
-            old_mds = self._process_mds(index_d, list_t, old_mds)
+            old_mds = Curgraph._process_mds(
+                index_d, list_t, old_mds, local_results, solver, dist_mat
+            )
             index_d += 1
+        return local_results
 
+    @staticmethod
     def _process_mds(
-        self, index_d: int, list_t: List[float], old_mds: np.ndarray
+        index_d: int,
+        list_t: List[float],
+        old_mds: np.ndarray,
+        local_results: Dict[int, Dict[str, Any]],
+        solver: RadiusClustering,
+        dist_mat: np.ndarray,
     ) -> np.ndarray:
         """
         Process the minimum dominating set (MDS) for a given dissimilarity index.
         """
         t = list_t[index_d]
-        if self._is_dominating_set(t, old_mds):
+        if Curgraph._is_dominating_set(t, old_mds, dist_mat):
             return old_mds
-        new_mds = self.solver.set_params(radius=t).fit(self.X_).centers_
+        new_mds = solver.set_params(radius=t).fit(dist_mat).centers_
         if len(new_mds) > len(old_mds):
-            self._update_results(t, new_mds)
+            Curgraph._update_results(t, new_mds, local_results)
 
         return new_mds
 
-    def _update_results(self, mds: np.ndarray, t: float) -> None:
+    @staticmethod
+    def _update_results(
+        mds: np.ndarray, t: float, local_results: Dict[int, Dict[str, Any]]
+    ) -> None:
         """
         Update the results dictionary with the new MDS and radius.
         """
         card = len(mds)
-        if self.results_[card]:
-            if t < self.results_[card]["radius"]:
-                self.results_[card] = {"radius": t, "centers": mds}
+        if card not in local_results:
+            local_results[card] = {"radius": t, "centers": mds}
         else:
-            self.results_[card] = {"radius": t, "centers": mds}
+            if t < local_results[card]["radius"]:
+                local_results[card] = {"radius": t, "centers": mds}
+            else:
+                local_results[card] = {"radius": t, "centers": mds}
 
-    def _is_dominating_set(self, t: float, mds: np.ndarray) -> bool:
+    @staticmethod
+    def _is_dominating_set(t: float, mds: np.ndarray, dist_mat: np.ndarray) -> bool:
         """
         Check if the current MDS is a dominating set for the given threshold t.
         """
-        adj_mat = self.dist_mat_ <= t
+        adj_mat = dist_mat <= t
         return np.all(np.any(adj_mat[:, mds], axis=1))
 
-    def predict(self, X: np.ndarray, k: int) -> Tuple[np.ndarray, float]:
+    def _compute_labels(self) -> None:
         """
-        Predict the clusters and maximum radius for the given data, for a specific number of clusters.
+        Compute the cluster labels for each point in the dataset.
         """
-        # Implementation of the predict method
-        return np.array([]), 0.0
+        for _, result in self.results_.items():
+            centers = result["centers"]
+            distances = self.dist_mat_[:, centers]
+            result["labels"] = np.argmin(distances, axis=1)
+            min_dist = np.min(distances, axis=1)
+            result["labels"][min_dist > result["radius"]] = -1
+
+        self.labels_ = self.results_[self.target_cardinality]["labels"]
 
     def get_results(self) -> dict:
         """
