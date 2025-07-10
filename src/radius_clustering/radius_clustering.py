@@ -8,6 +8,8 @@ clustering tasks.
 This module serves as the main interface for the Radius clustering library.
 """
 
+# TODO: Implement a check_radius_dtype function to catch when a numpy dtype is passed (counter example that should work as expected : catching np.float32 as Exception)
+
 from __future__ import annotations
 
 import os
@@ -52,12 +54,12 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
     .. note::
         The `random_state_` attribute is not used when the `manner` is set to "exact".
-    
+
     .. versionchanged:: 1.4.0
         The `RadiusClustering` class has been refactored.
         Clustering algorithms are now separated into their own module
         (`algorithms.py`) to improve maintainability and extensibility.
-    
+
     .. versionadded:: 1.4.0
         The `set_solver` method was added to allow users to set a custom solver
         for the MDS problem. This allows for flexibility in how the MDS problem is solved
@@ -113,7 +115,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             return False
         return np.allclose(a, a.T, atol=tol)
 
-    def fit(self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean") -> "RadiusClustering":
+    def fit(
+        self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean"
+    ) -> "RadiusClustering":
         """
         Fit the MDS clustering model to the input data.
 
@@ -147,7 +151,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             This should be a valid metric string from
             `sklearn.metrics.pairwise_distances` or a callable that computes
             the distance between two points.
-        
+
         .. note::
             The metric parameter *MUST* be a valid metric string from
             `sklearn.metrics.pairwise_distances` or a callable that computes
@@ -160,11 +164,11 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             - and many more supported by scikit-learn.
             please refer to the
             `sklearn.metrics.pairwise_distances` documentation for a full list.
-        
+
         .. attention::
             If the input is a distance matrix, the metric parameter is ignored.
             The distance matrix should be symmetric and square.
-        
+
         .. warning::
             If the parameter is a callable, it should :
             - Accept two 1D arrays as input.
@@ -200,14 +204,16 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             dist_mat = pairwise_distances(self.X_checked_, metric=metric)
         else:
             dist_mat = self.X_checked_
-        
-        if not self._check_symmetric(dist_mat):
-            raise ValueError("Input distance matrix must be symmetric. Got a non-symmetric matrix.")
+
         self.dist_mat_ = dist_mat
         if not isinstance(self.radius, (float, int)):
-            raise ValueError("Radius must be a positive float.")
+            raise ValueError(
+                f"Radius must be an int or float.\n Got {self.radius} of type {type(self.radius)}."
+            )
         if self.radius <= 0:
-            raise ValueError("Radius must be a positive float.")
+            raise ValueError(
+                f"Radius must be a positive int or float.\nGot {self.radius}."
+            )
         adj_mask = np.triu((dist_mat <= self.radius), k=1)
         self.nb_edges_ = np.sum(adj_mask)
         if self.nb_edges_ == 0:
@@ -227,7 +233,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
 
         return self
 
-    def fit_predict(self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean") -> np.ndarray:
+    def fit_predict(
+        self, X: np.ndarray, y: None = None, metric: str | callable = "euclidean"
+    ) -> np.ndarray:
         """
         Fit the model and return the cluster labels.
 
@@ -243,7 +251,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             the distance matrix will be computed.
         y : Ignored
             Not used, present here for API consistency by convention.
-        
+
         metric : str | callable, optional (default="euclidean")
             The metric to use when computing the distance matrix.
             The default is "euclidean".
@@ -263,7 +271,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         """
         n = self.X_checked_.shape[0]
         if self.manner not in self._algorithms:
-            raise ValueError(f"Invalid manner. Please choose in {list(self._algorithms.keys())}.")
+            raise ValueError(
+                f"Invalid manner. Please choose in {list(self._algorithms.keys())}."
+            )
         if self.clusterer_ == clustering_approx:
             if self.random_state is None:
                 self.random_state = 42
@@ -271,7 +281,9 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             seed = self.random_state_.randint(np.iinfo(np.int32).max)
         else:
             seed = None
-        self.centers_, self.mds_exec_time_ = self.clusterer_(n, self.edges_, self.nb_edges_, seed)
+        self.centers_, self.mds_exec_time_ = self.clusterer_(
+            n, self.edges_, self.nb_edges_, seed
+        )
 
     def _compute_effective_radius(self):
         """
@@ -297,14 +309,14 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         Set a custom solver for resolving the MDS problem.
         This method allows users to replace the default MDS solver with a custom one.
 
-        An example is provided below and in the example gallery : 
+        An example is provided below and in the example gallery :
         :ref:`sphx_glr_auto_examples_plot_benchmark_custom.py`
 
         .. important::
             The custom solver must accept the same parameters as the default solvers
             and return a tuple containing the cluster centers and the execution time.
             e.g., it should have the signature:
-            
+
             >>> def custom_solver(
             >>>             n: int,
             >>>             edges: np.ndarray,
@@ -316,7 +328,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             >>>     exec_time = ...
             >>>     # Return the centers and execution time
             >>>     return centers, exec_time
-            
+
             This allows for flexibility in how the MDS problem is solved.
 
         Parameters:
@@ -334,7 +346,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
         """
         if not callable(solver):
             raise ValueError("The provided solver must be callable.")
-        
+
         # Check if the solver has the correct signature
         try:
             n = 3
@@ -342,6 +354,8 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             nb_edges = edges.shape[0]
             solver(n, edges, nb_edges, random_state=None)
         except Exception as e:
-            raise ValueError(f"The provided solver does not have the correct signature: {e}") from e
+            raise ValueError(
+                f"The provided solver does not have the correct signature: {e}"
+            ) from e
         self.manner = "custom"
         self._algorithms["custom"] = solver

@@ -46,6 +46,8 @@ from __future__ import annotations
 
 import os
 import time
+import random
+import warnings
 import numpy as np
 import scipy as sp
 
@@ -55,7 +57,7 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import check_is_fitted, validate_data
 from sklearn.utils import check_random_state
 from sklearn.metrics import pairwise_distances
-from typing import Union, List, Dict, Any, Tuple
+from typing import Union, List, Dict, Any, Tuple, Optional
 
 from .radius_clustering import RadiusClustering
 
@@ -118,52 +120,75 @@ class Curgraph(ClusterMixin, BaseEstimator):
         self,
         manner: str = "approx",
         max_clusters: int = None,
-        radius: Union[int, float, None] = None,
+        n_clusters: Union[int, None] = None,
         random_state: Union[int, np.random.RandomState, None] = None,
         n_jobs: int = -1,
     ):
         self.manner = manner
         self.max_clusters = max_clusters
-        self.radius = radius
+        self.n_clusters = n_clusters
         self.random_state = random_state
         self.n_jobs = n_jobs
 
-    def _init_dist_list(self, X: np.ndarray) -> None:
+    def _check_symmetric(self, X: np.ndarray) -> bool:
+        """
+        Check if the input matrix is symmetric.
+        """
+        if X.ndim != 2 or X.shape[0] != X.shape[1]:
+            return False
+        return np.allclose(X, X.T, atol=1e-8)
+
+    def _init_dist_list(self, radius: Optional[int | float]) -> float:
         """
         Initialize the list of dissimilarities based on the radius parameter.
         """
-        self.X_ = validate_data(self, X)
-        self.dist_mat_ = pairwise_distances(self.X_)
-        self._list_t = np.unique(self.dist_mat_)[::-1]
-        if self.radius is None:
+        if not self._check_symmetric(self.X_):
+            self.dist_mat_ = pairwise_distances(self.X_)
+        else:
+            self.dist_mat_ = self.X_
+        tril_mat = np.tril(self.dist_mat_, k=-1)
+        self._list_t = np.unique(tril_mat)[::-1][:-1]  # Exclude the zero distance
+        if radius is None:
             t = self.dist_mat_.max(axis=1).min()
         else:
-            if not isinstance(self.radius, (int, float)):
+            if not isinstance(radius, (int, float)):
                 raise ValueError(
-                    f"Radius must be an int or float, got {type(self.radius)} instead."
+                    f"Radius must be an int or float, got {type(radius)} instead."
                 )
-            if self.radius < 0:
-                raise ValueError("Radius must be non-negative.")
-
-            t = self.radius
+            if radius <= 0:
+                warnings.warn(
+                    f"Radius must be a positive float, got {radius}.\n"
+                    "Defaulting radius to the MinMax in distance matrix.\n"
+                    "See documentation for more details.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                radius = self.dist_mat_.max(axis=1).min()
+            t = radius
         arg_radius = np.where(self._list_t <= t)[0][0]
         self._list_t = self._list_t[arg_radius:]
+        return t
 
-    def fit(self, X: np.ndarray, y=None) -> "Curgraph":
+    def fit(
+        self, X: np.ndarray, y=None, radius: Optional[int | float] = None
+    ) -> "Curgraph":
         """
         Run the CURGRAPH algorithm.
         """
-        self._init_dist_list(X)
+        self.results_ = {}
+        self.X_ = validate_data(self, X, ensure_all_finite=True)
+        first_t = self._init_dist_list(radius)
         self.solver_ = RadiusClustering(
             manner=self.manner, random_state=self.random_state
         )
-        if self.radius is not None:
+        if radius is not None:
             dissimilarity_index = 0
             first_t = self._list_t[dissimilarity_index]
             old_mds = self.solver_.set_params(radius=first_t).fit(X).centers_
         else:
             dissimilarity_index = 1
             old_mds = [np.argmin(self.dist_mat_.max(axis=1))]
+            self.results_[1] = {"radius": first_t, "centers": old_mds}
         cardinality_limit = (
             self.max_clusters + 1 if self.max_clusters else len(old_mds) + 1
         )
@@ -181,7 +206,6 @@ class Curgraph(ClusterMixin, BaseEstimator):
         with parallel_backend("threading", n_jobs=effective_n_jobs(self.n_jobs)):
             result_list = Parallel()(tasks)
 
-        self.results_ = {}
         for local_results in result_list:
             for card, result in local_results.items():
                 if card not in self.results_:
@@ -189,18 +213,43 @@ class Curgraph(ClusterMixin, BaseEstimator):
                 else:
                     if result["radius"] < self.results_[card]["radius"]:
                         self.results_[card] = result
-        self.labels_ = None
+        if self.n_clusters is None:
+            n_clusters = random.choice(list(self.results_.keys()))
+        else:
+            n_clusters = self.n_clusters
+        target_centers = self.results_.get(n_clusters, {}).get("centers", [])
+        try:
+            self.labels_ = self._compute_labels(target_centers)
+        except Exception as e:
+            if self.results_:
+                warnings.warn(
+                    f"An error occurred while computing labels: {e}\n"
+                    "Defaulting to n_cluster=1 for algorithm continuity\n"
+                    f"NB clusters available for pickup : {sorted(self.results_.keys())}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                self.labels_ = np.zeros(self.X_.shape[0], dtype=int)
+            else:
+                raise ValueError(
+                    "No clusters found. Please check the input data and parameters."
+                ) from e
         return self
 
-    def predict(self, n_clusters: int) -> np.ndarray:
+    def predict_new_data(self, X: np.ndarray) -> np.ndarray:
         check_is_fitted(self)
-        solution = self.results_.get(n_clusters)
+        X = validate_data(self, X, ensure_all_finite=True, reset=False)
+        solution = self.results_.get(self.n_clusters, None)
         if solution is None:
-            available = sorted(self.results_.keys())
-            raise ValueError(
-                f"No solution found for {n_clusters} clusters. "
-                f"Available solutions are for k={available}."
+            n_to_predict = random.choice(self.available_clusters)
+            warnings.warn(
+                f"No solution found for n_clusters={n_to_predict}.\n"
+                f"Available clusters: {self.available_clusters}\n"
+                f"Defaulting to {n_to_predict} clusters.\n",
+                UserWarning,
+                stacklevel=2,
             )
+            solution = self.results_.get(n_to_predict, None)
         centers = solution["centers"]
         distance_to_centers = self.dist_mat_[:, centers]
         return np.argmin(distance_to_centers, axis=1)
@@ -225,6 +274,15 @@ class Curgraph(ClusterMixin, BaseEstimator):
                 index_d, list_t, old_mds, local_results, solver, dist_mat
             )
             index_d += 1
+
+        if len(old_mds) <= cardinality_limit:
+            # If the MDS is smaller than the limit, we store it
+            # with the radius corresponding to the last dissimilarity index.
+
+            local_results[len(old_mds)] = {
+                "radius": list_t[index_d - 1],
+                "centers": old_mds,
+            }
         return local_results
 
     @staticmethod
@@ -240,6 +298,7 @@ class Curgraph(ClusterMixin, BaseEstimator):
         Process the minimum dominating set (MDS) for a given dissimilarity index.
         """
         t = list_t[index_d]
+        print(f"THRESHOLD : {t}")
         if Curgraph._is_dominating_set(t, old_mds, dist_mat):
             return old_mds
         new_mds = solver.set_params(radius=t).fit(dist_mat).centers_
@@ -277,3 +336,14 @@ class Curgraph(ClusterMixin, BaseEstimator):
         Return the results of the CURGRAPH algorithm.
         """
         return self.results_
+
+    def _compute_labels(self, target_centers: np.ndarray) -> np.ndarray:
+        """
+        Compute the labels for the data points based on the target clusters.
+        """
+        distances_to_centers = self.dist_mat_[:, target_centers]
+        partition_radius = self.results_.get(self.n_clusters, {}).get("radius")
+        labels = np.argmin(distances_to_centers, axis=1)
+        min_distances = np.min(distances_to_centers, axis=1)
+        labels[min_distances > partition_radius] = -1  # Assign -1 for outliers
+        return labels

@@ -96,13 +96,13 @@ def test_radius_clustering_invalid_radius():
     """
     Test that an error is raised when an invalid radius is provided.
     """
-    with pytest.raises(ValueError, match="Radius must be a positive float."):
+    with pytest.raises(ValueError, match="Radius must be a positive int or float."):
         RadiusClustering(manner="exact", radius=-1.0).fit([[0, 1], [1, 0], [2, 1]])
 
-    with pytest.raises(ValueError, match="Radius must be a positive float."):
+    with pytest.raises(ValueError, match="Radius must be a positive int or float."):
         RadiusClustering(manner="approx", radius=0.0).fit([[0, 1], [1, 0], [2, 1]])
 
-    with pytest.raises(ValueError, match="Radius must be a positive float."):
+    with pytest.raises(ValueError, match="Radius must be an int or float."):
         RadiusClustering(manner="exact", radius="invalid").fit([[0, 1], [1, 0], [2, 1]])
 
 
