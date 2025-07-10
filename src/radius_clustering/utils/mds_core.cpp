@@ -57,7 +57,7 @@ private:
 
         std::string name;
         float value;
-        
+
         Tuple(std::string name, float value) : name(name), value(value) {}
     };
     std::string instanceName;
@@ -67,7 +67,7 @@ private:
 
 class Instance {
 public:
-    Instance(int n, const std::vector<int>& edges_list, int nb_edges, std::string name) 
+    Instance(int n, const std::vector<int>& edges_list, int nb_edges, std::string name)
         : name(name), numNodes(n), adjacencyList(n) {
         for (int i = 0; i < numNodes; ++i) {
             unSelectedNodes.insert(i);
@@ -93,9 +93,13 @@ private:
     const bool supportAndLeafNodes = true;
 
     void constructAdjacencyList(const std::vector<int>& edge_list, int nb_edges) {
-        for (int i = 0; i < 2 * nb_edges; i+=2) {
+        size_t edge_list_size = edge_list.size();
+        for (int i = 0; i + 1 < edge_list_size; i += 2) {
             int u = edge_list[i];
-            int v = edge_list[i+1];
+            int v = edge_list[i + 1];
+            if (u < 0 || v < 0 || u >= numNodes || v >= numNodes) {
+                throw std::out_of_range("Edge indices out of range");
+            }
             adjacencyList[u].push_back(v);
             adjacencyList[v].push_back(u);
         }
@@ -120,7 +124,7 @@ private:
 
 class Solution {
 public:
-    Solution(const Instance& inst) 
+    Solution(const Instance& inst)
         : instance(&inst), numCovered(0), watchers(inst.getNumNodes()) {
         unSelectedNodes = inst.getUnSelectedNodes();
     }
@@ -338,7 +342,7 @@ private:
     bool randomConstruct = false;
 
 public:
-    IG(GIP& constructive, LocalSearch& localSearch) 
+    IG(GIP& constructive, LocalSearch& localSearch)
         : constructive(constructive), localSearch(localSearch) {}
 
     Result execute(const Instance& instance) {

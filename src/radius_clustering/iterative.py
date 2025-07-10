@@ -51,8 +51,8 @@ import scipy as sp
 
 from copy import deepcopy
 from joblib import Parallel, delayed, effective_n_jobs, parallel_backend
-from sklearn.base import BaseEstimator, MetaEstimatorMixin
-from sklearn.utils.validation import check_is_fitted
+from sklearn.base import BaseEstimator, ClusterMixin
+from sklearn.utils.validation import check_is_fitted, validate_data
 from sklearn.utils import check_random_state
 from sklearn.metrics import pairwise_distances
 from typing import Union, List, Dict, Any, Tuple
@@ -77,7 +77,7 @@ def gen_even_slices(n, n_packs, n_samples=None):
             start = end
 
 
-class Curgraph(MetaEstimatorMixin, BaseEstimator):
+class Curgraph(ClusterMixin, BaseEstimator):
     """
     CURGRAPH algorithm for clustering based on Minimum Dominating Set (MDS).
 
@@ -112,6 +112,8 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
         Return the results of the CURGRAPH algorithm.
     """
 
+    _estimator_type = "clusterer"
+
     def __init__(
         self,
         manner: str = "approx",
@@ -122,7 +124,6 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
     ):
         self.manner = manner
         self.max_clusters = max_clusters
-        self.solver = RadiusClustering(manner=self.manner, random_state=random_state)
         self.radius = radius
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -131,15 +132,21 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
         """
         Initialize the list of dissimilarities based on the radius parameter.
         """
-        self.X_ = X
+        self.X_ = validate_data(self, X)
         self.dist_mat_ = pairwise_distances(self.X_)
         self._list_t = np.unique(self.dist_mat_)[::-1]
         if self.radius is None:
             t = self.dist_mat_.max(axis=1).min()
         else:
+            if not isinstance(self.radius, (int, float)):
+                raise ValueError(
+                    f"Radius must be an int or float, got {type(self.radius)} instead."
+                )
+            if self.radius < 0:
+                raise ValueError("Radius must be non-negative.")
+
             t = self.radius
-        radius = t
-        arg_radius = np.where(self._list_t <= radius)[0]
+        arg_radius = np.where(self._list_t <= t)[0][0]
         self._list_t = self._list_t[arg_radius:]
 
     def fit(self, X: np.ndarray, y=None) -> "Curgraph":
@@ -147,10 +154,16 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
         Run the CURGRAPH algorithm.
         """
         self._init_dist_list(X)
-        self.n_jobs = effective_n_jobs(self.n_jobs)
-        dissimilarity_index = 0
-        first_t = self._list_t[0]
-        old_mds = self.solver.set_params(radius=first_t).fit(X).centers_
+        self.solver_ = RadiusClustering(
+            manner=self.manner, random_state=self.random_state
+        )
+        if self.radius is not None:
+            dissimilarity_index = 0
+            first_t = self._list_t[dissimilarity_index]
+            old_mds = self.solver_.set_params(radius=first_t).fit(X).centers_
+        else:
+            dissimilarity_index = 1
+            old_mds = [np.argmin(self.dist_mat_.max(axis=1))]
         cardinality_limit = (
             self.max_clusters + 1 if self.max_clusters else len(old_mds) + 1
         )
@@ -161,11 +174,11 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
                 old_mds,
                 cardinality_limit,
                 self.dist_mat_,
-                self.solver,
+                self.solver_,
             )
-            for s in gen_even_slices(len(self._list_t), self.n_jobs)
+            for s in gen_even_slices(len(self._list_t), effective_n_jobs(self.n_jobs))
         ]
-        with parallel_backend("threading", n_jobs=self.n_jobs):
+        with parallel_backend("threading", n_jobs=effective_n_jobs(self.n_jobs)):
             result_list = Parallel()(tasks)
 
         self.results_ = {}
@@ -231,7 +244,7 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
             return old_mds
         new_mds = solver.set_params(radius=t).fit(dist_mat).centers_
         if len(new_mds) > len(old_mds):
-            Curgraph._update_results(t, new_mds, local_results)
+            Curgraph._update_results(mds=new_mds, t=t, local_results=local_results)
 
         return new_mds
 
@@ -258,19 +271,6 @@ class Curgraph(MetaEstimatorMixin, BaseEstimator):
         """
         adj_mat = dist_mat <= t
         return np.all(np.any(adj_mat[:, mds], axis=1))
-
-    def _compute_labels(self) -> None:
-        """
-        Compute the cluster labels for each point in the dataset.
-        """
-        for _, result in self.results_.items():
-            centers = result["centers"]
-            distances = self.dist_mat_[:, centers]
-            result["labels"] = np.argmin(distances, axis=1)
-            min_dist = np.min(distances, axis=1)
-            result["labels"][min_dist > result["radius"]] = -1
-
-        self.labels_ = self.results_[self.target_cardinality]["labels"]
 
     def get_results(self) -> dict:
         """
