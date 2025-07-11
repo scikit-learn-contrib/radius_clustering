@@ -25,6 +25,33 @@ from .algorithms import clustering_approx, clustering_exact
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
+def check_radius_type(radius: float | int) -> None:
+    """
+    Check if the radius is a valid type (int or float).
+    Utility function to also check for numpy based types :
+
+    - np.float(32|64)
+    - np.int(8|16|32|64)
+
+    Parameters:
+    -----------
+    radius : float | int
+        The radius to check.
+
+    Raises:
+    -------
+    TypeError
+        If the radius is not an int or float.
+    """
+    if not isinstance(
+        radius,
+        (int, float, np.float32, np.float64, np.int8, np.int16, np.int32, np.int64),
+    ):
+        raise TypeError(
+            f"Radius must be an int or float. Got {radius} of type {type(radius)}."
+        )
+
+
 class RadiusClustering(ClusterMixin, BaseEstimator):
     r"""
     Radius Clustering algorithm.
@@ -206,10 +233,7 @@ class RadiusClustering(ClusterMixin, BaseEstimator):
             dist_mat = self.X_checked_
 
         self.dist_mat_ = dist_mat
-        if not isinstance(self.radius, (float, int)):
-            raise ValueError(
-                f"Radius must be an int or float.\n Got {self.radius} of type {type(self.radius)}."
-            )
+        check_radius_type(self.radius)
         if self.radius <= 0:
             raise ValueError(
                 f"Radius must be a positive int or float.\nGot {self.radius}."

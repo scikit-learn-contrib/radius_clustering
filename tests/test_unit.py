@@ -102,7 +102,10 @@ def test_radius_clustering_invalid_radius():
     with pytest.raises(ValueError, match="Radius must be a positive int or float."):
         RadiusClustering(manner="approx", radius=0.0).fit([[0, 1], [1, 0], [2, 1]])
 
-    with pytest.raises(ValueError, match="Radius must be an int or float."):
+    with pytest.raises(
+        TypeError,
+        match="Radius must be an int or float. Got invalid of type <class 'str'>.",
+    ):
         RadiusClustering(manner="exact", radius="invalid").fit([[0, 1], [1, 0], [2, 1]])
 
 
